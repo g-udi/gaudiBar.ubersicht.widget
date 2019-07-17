@@ -1,0 +1,5 @@
+echo "$(sh gaudiBar.widget/lib/plugins/stats/cpu)
+        @$(sh gaudiBar.widget/lib/plugins/stats/memory)
+        @$(sh gaudiBar.widget/lib/plugins/stats/network-traffic)
+        @$(sh gaudiBar.widget/lib/plugins/stats/hdd)
+    "

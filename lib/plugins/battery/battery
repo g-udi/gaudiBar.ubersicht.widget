@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+echo "$(sh gaudiBar.widget/lib/plugins/battery/battery_percentage_script)
+      @$(sh gaudiBar.widget/lib/plugins/battery/battery_charging_script)"
+

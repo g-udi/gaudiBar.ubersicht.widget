@@ -1,0 +1,45 @@
+
+.octicon {
+    font: normal normal normal 10px/1 octicons;
+    display: inline-block;
+    text-decoration: none;
+    text-rendering: auto;
+    user-select: none;
+    font-size: 10px;
+    margin: 0 8px 0 0;
+}
+
+.github_notifications_details {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    visibility: hidden;
+    display: flex;
+}
+
+.gaudi_github_notification {
+    display: table;
+    background: #000;
+    padding: 3px 8px;
+    border: 1px solid rgb(122, 122, 122);
+    font-size: 10px;
+}
+.gaudi_github_notification:first-of-type {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.gaudi_github_notification:last-of-type{
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px
+}
+
+.gaudi-widget-github:hover .github_notifications_details, .gaudi-widget-github.hover .github_notifications_details{
+    visibility: visible;
+}
+
+.github_notifications_count {
+    margin: 0 5px;
+    font-size: 8px;
+    color: #19cb00;
+}

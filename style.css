@@ -1,0 +1,119 @@
+:root {
+    /* Choose background colors, ordered from left to right */
+    /* Set --gaudi-bg-gaudidate to "none" to have date's background same as bar */
+    --gaudi-bg: #000000;
+
+    /* Choose foreground colors */
+    --gaudi-fg-gaudi-widget: #ffffff;
+    /* Opacity.  Change --gaudi-opacity-center to 0 in order to hide date */
+    /* --gaudi-opacity affects --gaudi-border, so set it to 0 if you would like */
+    /* for every widget to appear independent. */
+    --gaudi-opacity: 0.0;
+    --gaudi-opacity-inner: 1;
+    --gaudi-opacity-center: 1;
+    /* Shadow. */
+    --gaudi-shadow: 0px 4px 10px 4px rgba(0,0,0,0.20);
+    --gaudi-shadow-inner: 0px 1px 1px 1px rgba(0,0,0,0.03);
+    /* Bar's total height including --gaudi-border and excluding padding */
+    --gaudi-height: 33px;
+    /* Entire bar's outer padding (use --gaudi-border for space between widgets) */
+    --gaudi-padding: 10px;
+
+    --gaudi-margin: 0 5px;
+    /* Border size.  Also functions as space between widgets, */
+    /* so set --gaudi-opacity to 0 if you want widgets to appear independent */
+    --gaudi-border: 6px;
+    /* Rounded corner radius */
+    /* Inner radius is best suited for when widgets appear independent */
+    /* by setting --gaudi-opacity to 0 */
+    --gaudi-border-radius: 3px;
+    --gaudi-border-radius-inner: 3px;
+
+    /* Inner-horizontal padding.  --gaudi-height determines inner-vertical padding */
+    --gaudi-text-padding: 3h;
+
+    /* Mono font recommended (alignment depends on character width) */
+    --gaudi-font: scientifica, SF Mono, Menlo;
+    --gaudi-font-size: 12px;
+    --gaudi-font-style: none;
+    --gaudi-icon-font: FontAwesome;
+    --gaudi-icon-size: 10px;
+}
+
+.widget {
+    width: 100vw;
+    height: 100vh;
+}
+
+.gaudi-flex {
+    display: flex;
+    align-items: center;
+}
+
+.gaudi-bar__top, .gaudi-bar__bottom {
+    height: var(--gaudi-height);
+    width: 100%;
+    position: absolute;
+    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap-reverse;
+}
+
+.gaudi-bar__top-middle, .gaudi-bar__bottom-middle {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column !important;
+    z-index: -1;
+}
+
+@media screen and (max-width: 1080px) {
+    .gaudi-bar__top-middle, .gaudi-bar__bottom-middle {
+        display: none;
+    }
+}
+
+.gaudi-bar-section {
+    display: flex;
+    margin: 5px;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+}
+
+.gaudi-bar-section-widget-container {
+    margin: 0 5px;
+    background: var(--gaudi-bg);
+}
+
+.gaudi-bar-section-widget {
+    display: flex;
+    height: 20px;
+    align-items: center;
+    font: var(--gaudi-font-size) var(--gaudi-font);
+    font-style: var(--gaudi-font-style);
+    color: var(--gaudi-fg-gaudi-widget);
+    opacity: var(--gaudi-opacity-inner);
+    padding: 2px var(--gaudi-padding) 0;
+    border-radius: var(--gaudi-border-radius);
+    line-height: calc(var(--gaudi-height) - calc(var(--gaudi-border) * 2));
+    box-shadow: var(--gaudi-shadow-inner);
+    position: relative;
+}
+
+.gaudi-bar-section-widget-section, .gaudi-content__spaced {
+    margin: var(--gaudi-margin);
+}
+
+.gaudi-bar__top {
+    top: 10px;
+}
+
+.gaudi-bar__bottom {
+    bottom: 0;
+}
+
+.gaudi-icon {
+    margin: 0 8px 0 0;
+}
+
