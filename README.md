@@ -47,7 +47,7 @@ The image above shows how gaudi overlays on your desktop:
 
 ## Widgets
 
-### stats
+### [stats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/stats)
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -68,7 +68,7 @@ In order to give a more accurate calculation for the CPU load you can define the
 
 This widget shows the current date.
 
-### istats
+### [istats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/istats)
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
