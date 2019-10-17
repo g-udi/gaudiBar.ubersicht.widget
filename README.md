@@ -55,8 +55,6 @@ The image above shows how gaudi overlays on your desktop:
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
-| Battery percentage command    | `pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d'%'` |
-| Battery charge status command | `pmset -g batt | grep "'.*'" | sed "s/'//g" | cut -c 18-19`             |
 
 This widget shows:
  - Battery charge status (pluggin in or disconnected from AC source)
