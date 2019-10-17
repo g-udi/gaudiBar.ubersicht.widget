@@ -47,6 +47,24 @@ The image above shows how gaudi overlays on your desktop:
 
 ## Widgets
 
+# date
+
+![date-widget](https://user-images.githubusercontent.com/550726/67029499-5681fa00-f105-11e9-84fd-d88a806b458f.png)
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+> This widget shows the current date
+
+# time
+
+![time-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+> This widget shows the current time
+
 ### battery
 
 ![battery-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
@@ -68,6 +86,84 @@ This widget shows:
 | >= 25 && < 50     | fa-battery-half           | <span style="color:orange">orange</span> |
 | >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
 | < 10              | fa-battery-empty          | <span style="color:red">red</span>    |
+
+### chunkwm
+![chunkwm-widget](https://user-images.githubusercontent.com/550726/66969663-61477b00-f082-11e9-8b3e-f5c88e06d6b8.png)
+
+> Shows the [chunkwm](https://github.com/koekeishiya/chunkwm) mode and the current active window title (application name + window title)
+
+| Refresh Frequency             | 100                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows:
+ - The current space chiunkwm mode (monocle, float or bsp)
+ - The active window's window title (application name) <sup>and any sub name like file name or website name depending on the application</sup>
+ - Adaptive color status and icons for applications
+
+#### Custom icons and colors
+
+This widget controls what icons are shown for each application and the color of the text for that application via two maps using [Font Awesome](https://fontawesome.com/) that are loaded by default with gaudi:
+
+```js
+const APPLICATIONS_ICONS = {
+    "google chrome": "fab fa-chrome",
+    "path finder": "fab fa-apple",
+    "messages": "fas fa-comments",
+    "fantastical 2": "fas fa-calendar",
+    "kitty": "fas fa-terminal",
+    "finder": "fab fa-apple",
+    "system preferences": "fas fa-cogs",
+    "station": "fab fa-artstation",
+    "evernote": "fab fa-evernote",
+    "todoist": "fa fa-list",
+    "gitkraken": "fab fa-gitkraken",
+    "spotify": "fab fa-spotify",
+    "electron": "fab fa-codepen"
+}
+```
+```js
+const APPLICATIONS_COLORS = {
+    "google chrome": "#be222f",
+    "path finder": "##3385d7",
+    "kitty": "#32cd32",
+    "system preferences": "#867C85",
+    "evernote": "#2dbe60",
+    "todoist": "#db4c3f",
+    "gitkraken": "#169287",
+    "spotify": "#1db954",
+    "electron": "#2c3e50"
+}
+```
+
+You can customize those to your liking. The default icon used for applications is `fa-spinner` as shown below:
+
+![default-chunkwm-icon](https://user-images.githubusercontent.com/550726/66969662-61477b00-f082-11e9-8261-cad1400d2517.png)
+
+### crypto
+
+![crypto-widget](https://user-images.githubusercontent.com/550726/66969792-fd718200-f082-11e9-886a-7a7d75b49784.png)
+
+| Refresh Frequency             | 1000000                                                                   |
+|-------------------------------|-----------------------------------------------------------------------
+
+This widget shows:
+ - The status of primary coins you track directly on the desktop
+ - The status of the secondary coins on click
+ - The icon of the crypto currecny fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
+ - A color code (green (increase) / red (decrease)) that indicates that change in price for the last 1 hour
+
+The widget make use of the [CoinMarketCap](https://coinmarketcap.com/) API `https://api.coinmarketcap.com/v1/ticker/`.
+
+#### Coins configuration
+
+The set of primary and secondary coins is configured via the `coins.js` file where you include the coin code as show below:
+
+```js
+module.exports =  {
+    primary: ["btc", "xrp"],
+    secondary: ["doge", "eth", "dash", "strat", "steem"]
+};
+```
 
 # How it works:
 
@@ -174,6 +270,55 @@ return (
 )
 ```
 The best way would be to check the widgets directory `lib/plugins` and get inspiration on the various use cases.
+
+### Hover/Click context
+
+Sometimes there are lots of information that you want to show on demand rather than always. the [crypto](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/crypto), [prayerTime](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/prayerTime) and [github](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/github) widgets both make use of that by only showing a subset of information and the rest hidden in an on-click pop-up. 
+
+To make use of the on-click pop-up you can add in your widget a `details` view you can do:
+
+```jsx
+<span className='gaudi_crypto_details'>
+    {
+        return (
+            <span key={index} className="gaudi_crypto_detail">
+                <span className={`gaudi-icon cf cf-${_secondaryCoin.symbol.toLowerCase()}`}></span>
+                <span className={_secondaryCoin.percent_change_1h > 0 ? 'gaudi-crypto-green' : 'gaudi-crypto-red'}>${roundPrice(_secondaryCoin.price_usd, 4)} </span>
+            </span>
+        )
+    }
+</span>
+```
+and then in your stylesheet add:
+
+```css
+.gaudi_crypto_details {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    visibility: hidden;
+    display: flex;
+}
+
+.gaudi_crypto_detail {
+    display: table;
+    background: #000;
+    padding: 3px 8px;
+    border: 1px solid rgb(122, 122, 122);
+    font-size: 10px;
+}
+
+.gaudi_crypto_detail:first-of-type {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.gaudi_crypto_detail:last-of-type {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px
+}
+```
+of course you can customize this to your liking, but I hope you got the main idea.
 
 ### Geo-localized widgets
 
