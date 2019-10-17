@@ -47,7 +47,7 @@ The image above shows how gaudi overlays on your desktop:
 
 ## Widgets
 
-# date
+### date
 
 ![date-widget](https://user-images.githubusercontent.com/550726/67029499-5681fa00-f105-11e9-84fd-d88a806b458f.png)
 
@@ -56,7 +56,7 @@ The image above shows how gaudi overlays on your desktop:
 
 > This widget shows the current date
 
-# time
+### time
 
 ![time-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
 
@@ -220,6 +220,18 @@ module.exports = {
     }
 }
 ```
+### Top-Right widgets
+
+![gaudi-top-right](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
+
+### Top-Left widgets
+![gaudi-top-left](https://user-images.githubusercontent.com/550726/66969720-a10e6280-f082-11e9-955b-2897bb79605d.png)
+
+### Bottom-Left widgets
+![gaudi-bottom-left](https://user-images.githubusercontent.com/550726/66969663-61477b00-f082-11e9-8b3e-f5c88e06d6b8.png)
+
+### Bottom-Right widgets
+![gaudi-bottom-right](https://user-images.githubusercontent.com/550726/66969698-84722a80-f082-11e9-8966-9f265af1a740.png)
 
 # Writing Widgets
 
