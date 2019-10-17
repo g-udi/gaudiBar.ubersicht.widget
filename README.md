@@ -58,7 +58,7 @@ The image above shows how gaudi overlays on your desktop:
 
 ### time
 
-![time-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
+![time-widget](https://user-images.githubusercontent.com/550726/67030265-f9874380-f106-11e9-9e38-f6a6c5ea699a.png)
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -67,7 +67,7 @@ The image above shows how gaudi overlays on your desktop:
 
 ### battery
 
-![battery-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
+![battery-widget](https://user-images.githubusercontent.com/550726/67030266-fa1fda00-f106-11e9-943a-8a60ae448090.png)
 
 > Shows the battery charging status and percentage
 
