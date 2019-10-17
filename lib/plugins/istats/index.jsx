@@ -6,7 +6,7 @@ import Transformer from './transformer/Transformer.js';
 
 export const refreshFrequency= 10000;
 
-const ISTATS_LOCATION = '/usr/bin/istats';
+const ISTATS_LOCATION = '/Users/ahmadassaf/.rbenv/shims/istats';
 
 const OPTIONS = {
     tempUnit: 'C',

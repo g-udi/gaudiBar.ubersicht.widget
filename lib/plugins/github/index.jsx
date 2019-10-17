@@ -44,11 +44,12 @@ export const render = () => {
         };
 
         for (let reason of Array.from((Array.from(data).map((notification) => notification.reason)))) {
-            GITHUB_NOTIFICATIONS[reason].count += 1;
-            totalNotifications += 1;
+            if (GITHUB_NOTIFICATIONS[reason]) {
+                GITHUB_NOTIFICATIONS[reason].count++;
+                totalNotifications++;
+            }
         }
-
-
+        
         return totalNotifications > 0 ? (
             <div className={`gaudi-bar-section-widget gaudi-widget-github ${gaudi_widget_github}`}>
                 <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/github/style.css"></link>
@@ -75,8 +76,8 @@ export const render = () => {
             </div>
         ) : null
 
-
         } catch (ex) {
+            console.log(ex)
             return null;
         }
     })

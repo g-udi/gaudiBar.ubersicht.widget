@@ -42,11 +42,11 @@ export const render = () => {
                                 let _secondaryCoin = coins.find(__coin => { return __coin.symbol.toLowerCase() == secondaryCoin });
                                 {
                                     return (
+                                        !!_secondaryCoin ? 
                                         <span key={index} className="gaudi_crypto_detail">
                                             <span className={`gaudi-icon cf cf-${_secondaryCoin.symbol.toLowerCase()}`}></span>
                                             <span className={_secondaryCoin.percent_change_1h > 0 ? 'gaudi-crypto-green' : 'gaudi-crypto-red'}>${roundPrice(_secondaryCoin.price_usd, 4)} </span>
-                                        </span>
-
+                                        </span> : null
                                     )
                                 }
                             })

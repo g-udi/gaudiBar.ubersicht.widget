@@ -14,7 +14,7 @@ const SECRETS = require('./keys.secret');
 
 export const render = (geo) => {
 
-    return run(`curl -s GET https://beta.todoist.com/API/v8/tasks?filter=overdue -H "Authorization: Bearer ${SECRETS.apiKey}"`).then((output) => {
+    return run(`curl -s GET https://api.todoist.com/rest/v1/tasks?filter=overdue -H "Authorization: Bearer ${SECRETS.apiKey}"`).then((output) => {
         return output.length ? (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_todoist}`}>
                 <span className='today'>
