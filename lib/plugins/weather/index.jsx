@@ -1,7 +1,7 @@
 
 import { run, css } from "uebersicht"
 
-export const refreshFrequency= 10000;
+export const refreshFrequency= 100000;
 
 const gaudi_widget_weather = css`background: #3c5674`
 
@@ -56,7 +56,6 @@ export const render = () => {
     const WEATHER_URL = `https://api.forecast.io/forecast/${SECRETS.apiKey}/${GEO_LOCATION.latitude},${GEO_LOCATION.longitude}?units=auto&exclude=${EXCLUDES}`;
 
     return run(`curl -s ${WEATHER_URL}`).then((output) => {
-
         try {
             const today = JSON.parse(output).daily.data[0]
             return (

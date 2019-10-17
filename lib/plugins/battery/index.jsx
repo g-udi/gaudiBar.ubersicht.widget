@@ -25,20 +25,20 @@ export const render = () => {
         } else if ((batteryPercentage < 50) && (batteryPercentage >= 25)) {
             batteryIcon = 'fa-battery-half'
             batteryColor = 'orange'
-        } else if ((batteryPercentage < 25) && (batteryPercentage >= 15)) {
+        } else if ((batteryPercentage < 25) && (batteryPercentage >= 10)) {
             batteryIcon = 'fa-battery-quarter'
             batteryColor = 'yellow'
-        } else if (batteryPercentage < 15) {
+        } else if (batteryPercentage < 10) {
             batteryIcon = 'fa-battery-empty'
             batteryColor = 'red'
         }
 
         return (
-            <div className={`gaudi-bar-section-widget ${gaudi_widget_battery}`}>
+            <div className={`gaudi-bar-section-widget ${gaudi_widget_battery} gaudi-${batteryColor}`}>
                 {
                     state.includes('AC') ? (<span className={`fas fa-plug gaudi-icon`}></span>) : null
                 }
-                <span className={`fas ${batteryIcon} gaudi-${batteryColor} gaudi-icon`}></span>
+                <span className={`fas ${batteryIcon} gaudi-icon`}></span>
                 <span>{batteryPercentage}%</span>
             </div>
         )

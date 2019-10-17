@@ -46,18 +46,15 @@ export const render = () => {
         hourFormat12: true,
         // As Mugrib and Sunset times are same, It is preffered to hide Sunset column
         hideSunset: true,
-        hideSunrise: true,
-        // Adds extra padding in case of Fazr and Isha, to keep ribbon-style identical
-        addEdgeFiller: true
+        hideSunrise: true
     }
 
-    geolocation.getCurrentPosition((weather)=> {
-        
+    geolocation.getCurrentPosition((location)=> {
         GEO_LOCATION = {
-          latitude: weather.position.coords.latitude,
-          longitude: weather.position.coords.longitude,
-          city: weather.address.city,
-          country: weather.address.country
+          latitude: location.position.coords.latitude,
+          longitude: location.position.coords.longitude,
+          city: location.address.city,
+          country: location.address.country
         }
     });
 

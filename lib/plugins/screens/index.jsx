@@ -15,7 +15,7 @@ export const render = () => {
         const active = parseInt(values[1]);
         const total = parseInt(values[2]);
 
-        //apply a proper number tag so that space change controls can be added
+        // apply a proper number tag so that space change controls can be added
 
         const createScreens = (active, total) => {
             let screens = [];

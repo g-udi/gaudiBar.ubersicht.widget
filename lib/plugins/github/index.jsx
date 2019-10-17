@@ -9,7 +9,7 @@ const gaudi_widget_github = css`background: transparent`
 
 export const render = () => {
 
-    return run(`curl -s --user ahmadassaf:${SECRETS.apiKey} -s https://api.github.com/notifications?participating=true`).then((output) => {
+    return run(`curl -s --user ${SECRETS.user}:${SECRETS.apiKey} -s https://api.github.com/notifications?participating=true`).then((output) => {
 
     try {
 
@@ -76,8 +76,8 @@ export const render = () => {
             </div>
         ) : null
 
-        } catch (ex) {
-            console.log(ex)
+        } catch (exception) {
+            console.log(exception)
             return null;
         }
     })
