@@ -25,7 +25,7 @@ Make sure you have [Übersicht](http://tracesof.net/uebersicht/) installed.
 
 Then clone this repository.
 
-```shell
+```console
 # Make sure that this points to your widgets folder
 $WIDGETS_HOME=$HOME/Library/Application\ Support/Übersicht/widgets/
 git clone https://github.com/ahmadassaf/gaudi.widgets $WIDGETS_HOME/gaudi.widgets
