@@ -107,14 +107,14 @@ module.exports = {
 
 ![top-right-widgets](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
 
-### [time](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/time)
+### time
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows the current time.
 
-### [battery](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/battery)
+### battery
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -132,7 +132,7 @@ This widget shows:
 | >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
 | < 10              | fa-battery-empty          | <span style="color:red">red</span>    |
 
-### [network](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/network)
+### network
 
 | Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
