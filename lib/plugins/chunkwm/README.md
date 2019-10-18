@@ -9,7 +9,7 @@ This widget shows:
  - The active window's window title (application name) <sup>and any sub name like file name or website name depending on the application</sup>
  - Adaptive color status and icons for applications
 
-## Custom icons and colors
+## Customization
 
 This widget controls what icons are shown for each application and the color of the text for that application via two maps using [Font Awesome](https://fontawesome.com/) that are loaded by default with gaudi:
 

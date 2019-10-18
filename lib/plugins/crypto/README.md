@@ -15,7 +15,7 @@ This widget pop-over shows:
 
 The widget make use of the [CoinMarketCap](https://coinmarketcap.com/) API `https://api.coinmarketcap.com/v1/ticker/`.
 
-## Coins configuration
+## Configuration
 
 The set of primary and secondary coins is configured via the `coins.js` file where you include the coin code as show below:
 

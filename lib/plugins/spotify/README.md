@@ -1,21 +1,18 @@
-# chunkwm
+# spotify
 
-![battery-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
+![spotify-widget](https://user-images.githubusercontent.com/550726/67054961-328eda80-f13e-11e9-8e0c-64e397c32e3a.png)
 
-| Refresh Frequency             | 100                                                                   |
+| Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
-| Battery percentage command    | `pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d'%'` |
-| Battery charge status command | `pmset -g batt | grep "'.*'" | sed "s/'//g" | cut -c 18-19`             |
 
 This widget shows:
- - Battery charge status (pluggin in or disconnected from AC source)
- - Current charge percentage
- - Adaptive color status and icons to reflect the charge percentage
+ - The current playing song in Spotify (song title and singer/band name)
+ - Playback control buttons that are clickable:
+   - pause/play
+   - next song
+   - prevoius song
 
-| Charge Percentage | Icon                      | Color  |
-|-------------------|---------------------------|--------|
-| >= 90%            | fa-battery-full           | <span style="color:blue">blue</span>   |
-| >= 50 && < 90     | fa-battery-three-quarters | <span style="color:blue">blue</span>   |
-| >= 25 && < 50     | fa-battery-half           | <span style="color:orange">orange</span> |
-| >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
-| < 10              | fa-battery-empty          | <span style="color:red">red</span>    |
+## Requirements
+This widget depends on the [`shpotify`](https://github.com/hnarayanan/shpotify) command line spotify utility. 
+
+> `shpotify` can be installed easily via `brew install shpotify`

@@ -45,43 +45,67 @@ The image above shows how gaudi overlays on your desktop:
  - Each `primary-bar` has three `secondary-bar` region (top, middle, right)
  - Each `secondary-bar` can contain N widgets that are distributed evenly
 
-## Widgets
+# How it works:
 
-### [stats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/stats)
+## Übersicht
 
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
+[Übersicht](http://tracesof.net/uebersicht/) creates a webview and places it on your desktop, just above the wallpaper but behind everything else. Übersicht widgets are written as `.coffee` or `.js` <sup>and other flavors like `.jsx`</sup>  files which let you format elements with html, style them with css and manipulate data with javascript and coffeescript. For dynamic widgets, Übersicht let's you run terminal commands and insert the output into html, so just about any language can be used to write scripts for widgets.
 
-This widget shows:
- - Network upload and download traffic
- - Current memory and CPU percentage
- - Current free HDD space in GB 
+## Setting up the layout (widgets configuration)
 
-#### Customization
+The widgets are defined inside the `lib/plugins` folder and are loaded via the `lib.index.js` that exposes them.
 
-In order to give a more accurate calculation for the CPU load you can define the number of cores in the `NUMBER_OF_CORES` variable.
+```js
+module.exports = {
+    battery: require('./battery/index.jsx'),
+    chunkwm: require('./chunkwm/index.jsx'),
+    date: require('./date/index.jsx'),
+    istats: require('./istats/index.jsx')
+    ...
+}
+```
 
-### [date](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/date)
+The layout of the widgets is configured via the `lib/configs.js`. You simply need to add the widget name in the designated area. **It is important to match the widget name entry with the widget name defined in the exports in `/lib/index.js` in order for it to load properly**. 
 
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
+```js
+module.exports = {
+    top: {
+        right: [
+            "time",
+            "battery",
+            "network",
+            "weather"
+        ],
+        middle: [
+            "date"
+        ],
+        left: [
+            "crypto",
+            "github",
+            "todoist",
+            "spaces"
+        ]
+    },
+    bottom: {
+        right: [
+            "stats",
+            "istats"
+        ],
+        middle: [
+            "screens"
+        ],
+        left: [
+            "chunkwm"
+        ]
+    }
+}
+```
 
-This widget shows the current date.
+# Widgets
 
-### [istats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/istats)
+## Top-Right Widgets
 
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Fan speed (animated)
- - Current CPU temperature
-
-#### Requirements
-
-This widget required the [iStats](https://github.com/Chris911/iStats) Ruby gem to be installed.
-
-In the case where you have multiple Ruby envs (using for example `rbenv`), you might need to specify the location for the `istats` binary by editing the variable `ISTATS_LOCATION` in `index.jsx`.
+![top-right-widgets](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
 
 ### [time](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/time)
 
@@ -108,80 +132,155 @@ This widget shows:
 | >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
 | < 10              | fa-battery-empty          | <span style="color:red">red</span>    |
 
-### [chunkwm](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/chunkwm)
+### [network](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/network)
 
-| Refresh Frequency             | 100                                                                   |
+| Refresh Frequency             | 10000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
- - The current space [chunkwm](https://github.com/koekeishiya/chunkwm) mode (monocle, float or bsp)
- - The active window's window title (application name) <sup>and any sub name like file name or website name depending on the application</sup>
- - Adaptive color status and icons for applications
+ - Icon to indicate whether the laptop is connected to an Ethernet network or WiFi
+ - The SSID of the WiFi network if available
 
-#### Configuration
+### weather
 
-This widget controls what icons are shown for each application and the color of the text for that application via two maps using [Font Awesome](https://fontawesome.com/) that are loaded by default with gaudi:
-
-```js
-const APPLICATIONS_ICONS = {
-    "google chrome": "fab fa-chrome",
-    "path finder": "fab fa-apple",
-    "messages": "fas fa-comments",
-    "fantastical 2": "fas fa-calendar",
-    "kitty": "fas fa-terminal",
-    "finder": "fab fa-apple",
-    "system preferences": "fas fa-cogs",
-    "station": "fab fa-artstation",
-    "evernote": "fab fa-evernote",
-    "todoist": "fa fa-list",
-    "gitkraken": "fab fa-gitkraken",
-    "spotify": "fab fa-spotify",
-    "electron": "fab fa-codepen"
-}
-```
-```js
-const APPLICATIONS_COLORS = {
-    "google chrome": "#be222f",
-    "path finder": "##3385d7",
-    "kitty": "#32cd32",
-    "system preferences": "#867C85",
-    "evernote": "#2dbe60",
-    "todoist": "#db4c3f",
-    "gitkraken": "#169287",
-    "spotify": "#1db954",
-    "electron": "#2c3e50"
-}
-```
-
-You can customize those to your liking. The default icon used for applications is `fa-spinner`.
-
-### [crypto](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/crypto)
-
-| Refresh Frequency             | 1000000                                                                   |
-|-------------------------------|-----------------------------------------------------------------------
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
- - The status of primary coins you track directly on the desktop
- - The icon of the crypto currecny fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
- - A color code (green (increase) / red (decrease)) that indicates that change in price for the last 1 hour
+
+ - High/Low temperature in the current location
+ - Icon that corresponds to the current weather conditions (rain, snow, fog, cloudy, wind, clear, mostly clear, partly cloudy, clear night, party cloudy night and unkown)
+
+> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
+
+#### Requirements
+
+In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the weather widget folder that will contain the [DarkSky](https://darksky.net/dev) API key. The file should look like:
+
+```js
+module.exports = {
+    apiKey: '<DARKSKY_API_KEY>'
+}
+```
+
+#### Customization
+
+This widget uses [Font Awesome](https://fontawesome.com/) to display the icons for each secion defined in the `MAPPINGS` map:
+
+```js
+const MAPPINGS = {
+    icons: {
+        "rain"                :"fa-cloud-showers-heavy",
+        "snow"                :"fa-snowflake",
+        "fog"                 :"fa-smog",
+        "cloudy"              :"fa-cloud",
+        "wind"                :"fa-wind",
+        "clear-day"           :"fa-sun",
+        "mostly-clear-day"    :"fa-cloud-sun",
+        "partly-cloudy-day"   :"fa-cloud-sun-rain",
+        "clear-night"         :"fa-moon",
+        "partly-cloudy-night" :"fa-cloud-moon",
+        "unknown"             :"fa-temperature-high"
+    }
+}
+```
+
+## Top-Middle Widgets
+
+![date-widget](https://user-images.githubusercontent.com/550726/67029499-5681fa00-f105-11e9-84fd-d88a806b458f.png)
+
+### [date](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/date)
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows the current date.
+
+## Top-Left Widgets
+
+![top-left-widgets](https://user-images.githubusercontent.com/550726/66969720-a10e6280-f082-11e9-955b-2897bb79605d.png)
+
+### [spaces](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/screens)
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows the current desktop number that [chunkwm](https://github.com/koekeishiya/chunkwm) assigns.
+
+### prayertime
+
+![prayer-widget](https://user-images.githubusercontent.com/550726/66969793-fe0a1880-f082-11e9-9e57-03937328c973.png)
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows:
+ - The time for the upcoming prayer
 
 This widget pop-over shows:
- - The status of the secondary coins on click
+ - city and country for the current identified location
+ - the prayer times for the current day in the identified location
+ - the current (last) prayer time highlighted in green
 
-The widget make use of the [CoinMarketCap](https://coinmarketcap.com/) API `https://api.coinmarketcap.com/v1/ticker/`.
+> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
 
 #### Configuration
 
-The set of primary and secondary coins is configured via the `coins.js` file where you include the coin code as show below:
+You can adjust various setting in the `CONFIGURATIONS` map:
+
+ 1. `calcMethod`: Calculation method
+
+    Possible values:
+
+        0: Ithna Ashari
+        1: University of Islamic Sciences, Karachi
+        2: Islamic Society of North America (ISNA)
+        3: Muslim World League (MWL)
+        4: Umm al-Qura, Makkah
+        5: Egyptian General Authority of Survey
+        6: Custom Setting
+        7: Institute of Geophysics, University of Tehran
+ 2. `asrMethod`: Juristic Methods / Asr Calculation Methods:
+
+    Possible values:
+
+        0: Shafii (standard)
+        1: Hanafi
+        3. latitude  : Latitude
+        4. longitude : Longitude
+        5. timezone  : Timezone
+ 3. `timezone`: the current location timezone
+ 4. `location`: the city and country (set automatically from the geo object)
+ 5. `hoursformat12`: if false, times shows in 24Hour format, otherwise in 12Hour format (without AM/PM)
+ 6. `hideSunset`: as Mugrib and Sunset times are same, It is preffered to hide Sunset
+ 7. `hideSunrise`: hide sunrise time (default: `true`)
+
+> Note: You can find your latitude/longitude [here](http://freegeoip.net/) or from google map or so.
+
+### todoist
+
+| Refresh Frequency             | 1000000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows:
+ - Total number of overdue tasks in [Todoist](https://todoist.com).
+
+> This widget uses the `/rest/v1/tasks?filter=overdue` endpoint. You can [check their documentation](https://developer.todoist.com/rest/v8/#tasks) for more information.
+
+#### Requirements
+
+In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the todoist widget folder that will contain the Todoist API key. The file should look like:
 
 ```js
-module.exports =  {
-    primary: ["btc", "xrp"],
-    secondary: ["doge", "eth", "dash", "strat", "steem"]
-};
+module.exports = {
+    apiKey: '<TODOIST_API_KEY>'
+}
 ```
+> For more information on creating a personal access token, check [this instructions here](https://todoist.com/Users/viewPrefs?page=integrations)
 
-### [github](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/github)
+### github
+
+![github-widget](https://user-images.githubusercontent.com/550726/66969791-fd718200-f082-11e9-8408-702375f2442d.png)
 
 | Refresh Frequency             | 1000000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -243,22 +342,88 @@ const GITHUB_NOTIFICATIONS = {
 };
 ```
 
-### [prayertime](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/prayerTime)
+### crypto
 
-| Refresh Frequency             | 10000                                                                   |
+![crypto-widget](https://user-images.githubusercontent.com/550726/66969792-fd718200-f082-11e9-886a-7a7d75b49784.png)
+
+| Refresh Frequency             | 1000000                                                                   |
+|-------------------------------|-----------------------------------------------------------------------
+
+This widget shows:
+ - The status of primary coins you track directly on the desktop
+ - The icon of the crypto currecny fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
+ - A color code (green (increase) / red (decrease)) that indicates that change in price for the last 1 hour
+
+This widget pop-over shows:
+ - The status of the secondary coins on click
+
+The widget make use of the [CoinMarketCap](https://coinmarketcap.com/) API `https://api.coinmarketcap.com/v1/ticker/`.
+
+#### Configuration
+
+The set of primary and secondary coins is configured via the `coins.js` file where you include the coin code as show below:
+
+```js
+module.exports =  {
+    primary: ["btc", "xrp"],
+    secondary: ["doge", "eth", "dash", "strat", "steem"]
+};
+```
+
+## Bottom-Left Widgets
+
+![bottom-left-widgets](https://user-images.githubusercontent.com/550726/66969663-61477b00-f082-11e9-8b3e-f5c88e06d6b8.png)
+
+### chunkwm
+
+| Refresh Frequency             | 100                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
- - The time for the upcoming prayer
+ - The current space [chunkwm](https://github.com/koekeishiya/chunkwm) mode (monocle, float or bsp)
+ - The active window's window title (application name) <sup>and any sub name like file name or website name depending on the application</sup>
+ - Adaptive color status and icons for applications
 
-This widget pop-over shows:
- - city and country for the current identified location
- - the prayer times for the current day in the identified location
- - the current (last) prayer time highlighted in green
+#### Customization
 
-> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
+This widget controls what icons are shown for each application and the color of the text for that application via two maps using [Font Awesome](https://fontawesome.com/) that are loaded by default with gaudi:
 
-### [screens](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/screens)
+```js
+const APPLICATIONS_ICONS = {
+    "google chrome": "fab fa-chrome",
+    "path finder": "fab fa-apple",
+    "messages": "fas fa-comments",
+    "fantastical 2": "fas fa-calendar",
+    "kitty": "fas fa-terminal",
+    "finder": "fab fa-apple",
+    "system preferences": "fas fa-cogs",
+    "station": "fab fa-artstation",
+    "evernote": "fab fa-evernote",
+    "todoist": "fa fa-list",
+    "gitkraken": "fab fa-gitkraken",
+    "spotify": "fab fa-spotify",
+    "electron": "fab fa-codepen"
+}
+```
+```js
+const APPLICATIONS_COLORS = {
+    "google chrome": "#be222f",
+    "path finder": "##3385d7",
+    "kitty": "#32cd32",
+    "system preferences": "#867C85",
+    "evernote": "#2dbe60",
+    "todoist": "#db4c3f",
+    "gitkraken": "#169287",
+    "spotify": "#1db954",
+    "electron": "#2c3e50"
+}
+```
+
+## Bottom-Middle Widgets
+
+![spotify-widget](https://user-images.githubusercontent.com/550726/67054961-328eda80-f13e-11e9-8e0c-64e397c32e3a.png)
+
+### screens
 
 | Refresh Frequency             | 100                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -267,154 +432,9 @@ This widget shows:
  - The desktop spaces available
  - Highlights the active desktop with a green background
 
-### [spaces](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/screens)
+### spotify
 
 | Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows the current desktop number that [chunkwm](https://github.com/koekeishiya/chunkwm) assigns.
-
-### [todoist](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/todoist)
-
-| Refresh Frequency             | 1000000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Total number of overdue tasks in [Todoist](https://todoist.com).
-
-> This widget uses the `/rest/v1/tasks?filter=overdue` endpoint. You can [check their documentation](https://developer.todoist.com/rest/v8/#tasks) for more information.
-
-#### Requirements
-
-In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the todoist widget folder that will contain the Todoist API key. The file should look like:
-
-```js
-module.exports = {
-    apiKey: '<TODOIST_API_KEY>'
-}
-```
-> For more information on creating a personal access token, check [this instructions here](https://todoist.com/Users/viewPrefs?page=integrations)
-
-#### Configuration
-
-You can adjust various setting in the `CONFIGURATIONS` map:
-
- 1. `calcMethod`: Calculation method
-
-    Possible values:
-
-        0: Ithna Ashari
-        1: University of Islamic Sciences, Karachi
-        2: Islamic Society of North America (ISNA)
-        3: Muslim World League (MWL)
-        4: Umm al-Qura, Makkah
-        5: Egyptian General Authority of Survey
-        6: Custom Setting
-        7: Institute of Geophysics, University of Tehran
-
- 2. `asrMethod`: Juristic Methods / Asr Calculation Methods:
-
-    Possible values:
-
-        0: Shafii (standard)
-        1: Hanafi
-        3. latitude  : Latitude
-        4. longitude : Longitude
-        5. timezone  : Timezone
- 3. `timezone`: the current location timezone
- 4. `location`: the city and country (set automatically from the geo object)
- 5. `hoursformat12`: if false, times shows in 24Hour format, otherwise in 12Hour format (without AM/PM)
- 6. `hideSunset`: as Mugrib and Sunset times are same, It is preffered to hide Sunset
- 7. `hideSunrise`: hide sunrise time (default: `true`)
-
-
-> Note: You can find your latitude/longitude [here](http://freegeoip.net/) or from google map or so.
-
-### weather
-
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
-
- - High/Low temperature in the current location
- - Icon that corresponds to the current weather conditions (rain, snow, fog, cloudy, wind, clear, mostly clear, partly cloudy, clear night, party cloudy night and unkown)
-
-> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
-
-#### Requirements
-
-In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the weather widget folder that will contain the [DarkSky](https://darksky.net/dev) API key. The file should look like:
-
-```js
-module.exports = {
-    apiKey: '<DARKSKY_API_KEY>'
-}
-```
-
-#### Customization
-
-This widget uses [Font Awesome](https://fontawesome.com/) to display the icons for each secion defined in the `MAPPINGS` map:
-
-```js
-const MAPPINGS = {
-    icons: {
-        "rain"                :"fa-cloud-showers-heavy",
-        "snow"                :"fa-snowflake",
-        "fog"                 :"fa-smog",
-        "cloudy"              :"fa-cloud",
-        "wind"                :"fa-wind",
-        "clear-day"           :"fa-sun",
-        "mostly-clear-day"    :"fa-cloud-sun",
-        "partly-cloudy-day"   :"fa-cloud-sun-rain",
-        "clear-night"         :"fa-moon",
-        "partly-cloudy-night" :"fa-cloud-moon",
-        "unknown"             :"fa-temperature-high"
-    }
-}
-```
-
-### [stats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/stats)
-
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Network upload and download traffic
- - Current memory and CPU percentage
- - Current free HDD space in GB 
-
-#### Customization
-
-In order to give a more accurate calculation for the CPU load you can define the number of cores in the `NUMBER_OF_CORES` variable.
-
-### [istats](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/istats)
-
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Fan speed (animated)
- - Current CPU temperature
-
-#### Requirements
-
-This widget required the [iStats](https://github.com/Chris911/iStats) Ruby gem to be installed.
-
-In the case where you have multiple Ruby envs (using for example `rbenv`), you might need to specify the location for the `istats` binary by editing the variable `ISTATS_LOCATION` in `index.jsx`.
-
-### [network](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/network)
-
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Icon to indicate whether the laptop is connected to an Ethernet network or WiFi
- - The SSID of the WiFi network if available
-
-### [spotify](https://github.com/ahmadassaf/gaudi-widgets/tree/master/lib/plugins/spotify)
-
-| Refresh Frequency             | 100                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
@@ -429,61 +449,38 @@ This widget depends on the [`shpotify`](https://github.com/hnarayanan/shpotify) 
 
 > `shpotify` can be installed easily via `brew install shpotify`
 
-# How it works:
+## Bottom-Right Widgets
 
-## Übersicht
+![stats-widget](https://user-images.githubusercontent.com/550726/67034406-8504d280-f10f-11e9-9771-8e90aaae5c75.gif)
 
-[Übersicht](http://tracesof.net/uebersicht/) creates a webview and places it on your desktop, just above the wallpaper but behind everything else. Übersicht widgets are written as `.coffee` or `.js` <sup>and other flavors like `.jsx`</sup>  files which let you format elements with html, style them with css and manipulate data with javascript and coffeescript. For dynamic widgets, Übersicht let's you run terminal commands and insert the output into html, so just about any language can be used to write scripts for widgets.
+### stats
 
-## Setting up the layout (widgets configuration)
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
 
-The widgets are defined inside the `lib/plugins` folder and are loaded via the `lib.index.js` that exposes them.
+This widget shows:
+ - Network upload and download traffic
+ - Current memory and CPU percentage
+ - Current free HDD space in GB 
 
-```js
-module.exports = {
-    battery: require('./battery/index.jsx'),
-    chunkwm: require('./chunkwm/index.jsx'),
-    date: require('./date/index.jsx'),
-    istats: require('./istats/index.jsx')
-    ...
-}
-```
+#### Customization
 
-The layout of the widgets is configured via the `lib/configs.js`. You simply need to add the widget name in the designated area. **It is important to match the widget name entry with the widget name defined in the exports in `/lib/index.js` in order for it to load properly**. 
+In order to give a more accurate calculation for the CPU load you can define the number of cores in the `NUMBER_OF_CORES` variable.
 
-```js
-module.exports = {
-    top: {
-        right: [
-            "time",
-            "battery",
-            "network",
-            "weather"
-        ],
-        middle: [
-            "date"
-        ],
-        left: [
-            "crypto",
-            "github",
-            "todoist",
-            "spaces"
-        ]
-    },
-    bottom: {
-        right: [
-            "stats",
-            "istats"
-        ],
-        middle: [
-            "screens"
-        ],
-        left: [
-            "chunkwm"
-        ]
-    }
-}
-```
+### istats
+
+| Refresh Frequency             | 10000                                                                   |
+|-------------------------------|-------------------------------------------------------------------------|
+
+This widget shows:
+ - Fan speed (animated)
+ - Current CPU temperature
+
+#### Requirements
+
+This widget required the [iStats](https://github.com/Chris911/iStats) Ruby gem to be installed.
+
+In the case where you have multiple Ruby envs (using for example `rbenv`), you might need to specify the location for the `istats` binary by editing the variable `ISTATS_LOCATION` in `index.jsx`.
 
 # Writing Widgets
 
