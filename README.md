@@ -25,10 +25,10 @@ Make sure you have [Übersicht](http://tracesof.net/uebersicht/) installed.
 
 Then clone this repository.
 
-```bash
+```shell
 # Make sure that this points to your widgets folder
-$WIDGETS_HOME=$HOME/Library/Application\ Support/Übersicht/widgets/nerdbar.widget
-git clone https://github.com/ahmadassaf/gaudi-widgets $WIDGETS_HOME
+$WIDGETS_HOME=$HOME/Library/Application\ Support/Übersicht/widgets/
+git clone https://github.com/ahmadassaf/gaudi.widgets $WIDGETS_HOME/gaudi.widgets
 ```
 or to your current widget directory if you have changed it.
 > You can always know your widgets folder by clicking on the Übersicht menu bar icon and clicking on *Open widgets folder*
