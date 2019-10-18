@@ -603,3 +603,10 @@ geolocation.getCurrentPosition((weather)=> {
 ```js
 <span className={`fas fa-plug gaudi-icon`}></span>
 ```
+
+# Credits & Inspirations
+ - [nerdbar.widget](https://github.com/apierz/nerdbar.widget)
+ - [bar](https://github.com/callahanrts/bar)
+ - [darksky.widget](https://github.com/DeltaOS2/darksky.widget)
+ - [prayer-time-widget](https://github.com/ashikahmad/prayer-time-widget)
+ - [istats.widget](https://github.com/roele/istats.widget)
