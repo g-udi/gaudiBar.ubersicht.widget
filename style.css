@@ -110,7 +110,7 @@
 }
 
 .gaudi-bar__bottom {
-    bottom: 0;
+    bottom: 5px;
 }
 
 .gaudi-icon {
@@ -127,4 +127,8 @@
 
 .gaudi-yellow {
     background-color: #ecd211;
+}
+
+.gaudi-no-margin {
+    margin: 0;
 }

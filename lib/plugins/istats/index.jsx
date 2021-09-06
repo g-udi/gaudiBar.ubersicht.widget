@@ -17,17 +17,6 @@ export const render = () => {
 
     return run(`${ISTATS_LOCATION}`).then((output) => {
 
-
-        const renderStat = (title, iconName, value) => {
-
-            return (
-                <div key={title} className="stat">
-                    <i className={"icon " + iconName}></i>
-                    <div className="text">{value}</div>
-                </div>
-            );
-        }
-
         const clamp = (value, min, max) => {
             return Math.min(Math.max(value, min), max);
         }
