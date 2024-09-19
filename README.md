@@ -26,7 +26,7 @@ To overcome this, I have designed gaudi utilizing `flex` layout capabilities and
  - [dnd](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/dnd)
  - [github](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/github)
  - [network](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/network)
- - [prayertime](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/prayertime)
+ - [prayertime](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/prayerTime)
  - [stats](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/stats)
  - [weather](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/weather)
  - [yabai](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/yabai) 
