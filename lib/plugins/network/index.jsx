@@ -27,10 +27,11 @@ export const render = () => {
 
     return run(`bash gaudiBar.widget/lib/plugins/network/network`).then((output) => {
 
-        const values = output.split('@');
+        const values = JSON.parse(output);
+        
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_network}`}>
-                {getNetworkStatus(values[0].replace(/^\s+|\s+$/g, ""), values[1], values[2])}
+                {getNetworkStatus(values.service.replace(/^\s+|\s+$/g, ""), values.ssid, values.ip)}
             </div>
         )
     })

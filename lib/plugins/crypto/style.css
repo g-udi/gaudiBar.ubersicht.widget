@@ -1,40 +1,7 @@
-.gaudi_crypto_details {
-    position: absolute;
-    top: 30px;
-    left: 0;
-    display: flex;
-    border: 1px solid;
-    width: max-content;
-    border-color: rgb(122, 122, 122);
-    border-radius: 3px;
-    visibility: hidden;
-}
-
-.gaudi_crypto_detail {
-    display: table;
-    background: #000;
-    padding: 3px 8px;
-    font-size: 10px;
-}
-
-.gaudi_crypto_detail:first-of-type {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
-
-.gaudi_crypto_detail:last-of-type {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px
-}
-
-.gaudi-widget-crypto:hover .gaudi_crypto_details, .gaudi-widget-crypto.hover .gaudi_crypto_details {
-    visibility: visible;
-}
-
 .gaudi-crypto-green {
     color: #19cb00
 }
 
 .gaudi-crypto-red {
-    color: #db4c3f;
+    color: #e74c3c;
 }

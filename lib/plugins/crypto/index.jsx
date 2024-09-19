@@ -5,7 +5,7 @@ const SECRETS = require('./keys.secret');
 
 export const refreshFrequency= 1000000;
 
-const gaudi_widget_crypto = css`background: transparent`
+const gaudi_widget_crypto = css`background: #34495e`
 
 const COINS = require('./coins');
 
@@ -43,11 +43,11 @@ export const render = () => {
                             )
                         })
                     }
-                    <span className='gaudi_crypto_details'>
+                    <span className={`gaudi_widget_details ${gaudi_widget_crypto}`}>
                         {
                             COINS.secondary.map((__coin, index) => {
                                 return (
-                                    <span key={index} className="gaudi_crypto_detail">
+                                    <span key={index} className={`gaudi_widget_detail`}>
                                         <span className={`gaudi-icon cf cf-${__coin.toLowerCase()}`}></span>
                                         <span className={coins.data[__coin.toUpperCase()].quote[COINS.currency].percent_change_1h > 0 ? 'gaudi-crypto-green' : 'gaudi-crypto-red'}>${roundPrice(coins.data[__coin.toUpperCase()].quote[COINS.currency].price, 4)} </span>
                                     </span>

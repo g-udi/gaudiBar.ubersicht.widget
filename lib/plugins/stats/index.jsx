@@ -3,6 +3,7 @@ import { run, css } from "uebersicht"
 
 export const refreshFrequency = 1000;
 
+const gaudi_widget_stats = css`background-color: none; margin-left: -15px`
 const gaudi_color_green = css`color: #32cd32`
 const gaudi_color_red = css`color: #be222f`
 
@@ -89,15 +90,15 @@ export const render = () => {
 
     return run(`bash gaudiBar.widget/lib/plugins/stats/stats`).then((output) => {
 
-        const values = output.split('@')
+        const values = JSON.parse(output);
 
         // create an HTML string to be displayed by the widget
         return (
-            <div className="gaudi-bar-section-widget">
-                <span className="gaudi-bar-section-widget-section">{getCPU(values[0])}</span>
-                <span className="gaudi-bar-section-widget-section">{getFreeSpace(values[4].replace('Gi', '').trim())}</span>
-                <span className="gaudi-bar-section-widget-section">{getMem(values[1])}</span>
-                <span className="gaudi-bar-section-widget-section">{getNetTraffic(values[2], values[3])}</span>
+            <div className={`gaudi-bar-section-widget ${gaudi_widget_stats}`}>
+                <span className="gaudi-bar-section-widget-section">{getCPU(values.cpu)}</span>
+                <span className="gaudi-bar-section-widget-section">{getFreeSpace(values.hdd.replace('Gi', '').trim())}</span>
+                <span className="gaudi-bar-section-widget-section">{getMem(values.memory)}</span>
+                <span className="gaudi-bar-section-widget-section">{getNetTraffic(values.network.split('@')[0], values.network.split('@')[1])}</span>
             </div>
         )
     })

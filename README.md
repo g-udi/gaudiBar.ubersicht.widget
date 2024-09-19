@@ -19,6 +19,19 @@ To overcome this, I have designed gaudi utilizing `flex` layout capabilities and
  - **Adaptive**: Information or appearance adapt to the context (e.g., location) of the user. For example, the weather widget automatically detects your location and shows the relevant weather condition for you or the battery widget background color changes to reflect the amount of charge left.
  - **Responsive**: The `flex` layout allows gaudi to adapt to different screen widths and number of widgets so that you can have a consistent look and feel to your desktop.
 
+ ## Widgets
+ - [battery](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/battery)
+ - [crypto](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/crypto)
+ - [date](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/date)
+ - [dnd](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/dnd)
+ - [github](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/github)
+ - [network](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/network)
+ - [prayertime](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/prayertime)
+ - [stats](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/stats)
+ - [todoist](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/todoist)
+ - [weather](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/weather)
+ - [yabai](https://github.com/g-udi/gaudiBar.widget/tree/master/lib/plugins/yabai) 
+
 ## Installation
 
 Make sure you have [Übersicht](http://tracesof.net/uebersicht/) installed.
@@ -113,24 +126,6 @@ module.exports = {
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows the current time.
-
-### battery
-
-| Refresh Frequency             | 10000                                                                   |
-|-------------------------------|-------------------------------------------------------------------------|
-
-This widget shows:
- - Battery charge status (pluggin in or disconnected from AC source)
- - Current charge percentage
- - Adaptive color status and icons to reflect the charge percentage
-
-| Charge Percentage | Icon                      | Color  |
-|-------------------|---------------------------|--------|
-| >= 90%            | fa-battery-full           | <span style="color:blue">blue</span>   |
-| >= 50 && < 90     | fa-battery-three-quarters | <span style="color:blue">blue</span>   |
-| >= 25 && < 50     | fa-battery-half           | <span style="color:orange">orange</span> |
-| >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
-| < 10              | fa-battery-empty          | <span style="color:red">red</span>    |
 
 ### network
 
@@ -401,7 +396,6 @@ const APPLICATIONS_ICONS = {
     "evernote": "fab fa-evernote",
     "todoist": "fa fa-list",
     "gitkraken": "fab fa-gitkraken",
-    "spotify": "fab fa-spotify",
     "electron": "fab fa-codepen"
 }
 ```
@@ -414,7 +408,6 @@ const APPLICATIONS_COLORS = {
     "evernote": "#2dbe60",
     "todoist": "#db4c3f",
     "gitkraken": "#169287",
-    "spotify": "#1db954",
     "electron": "#2c3e50"
 }
 ```

@@ -1,5 +1,18 @@
-echo "$(sh gaudiBar.widget/lib/plugins/stats/cpu)
-        @$(sh gaudiBar.widget/lib/plugins/stats/memory)
-        @$(sh gaudiBar.widget/lib/plugins/stats/network-traffic)
-        @$(sh gaudiBar.widget/lib/plugins/stats/hdd)
-    "
+#!/usr/bin/bash
+
+CPU=$(ps -axC -o %cpu | awk '{s+=$1} END {print s}')
+HDD=$(df -h | grep -m 1 /disk1 | awk -F" " '{print $4}')
+MEMORY=$(ps -A -o %mem | awk '{s+=$1} END {print "" s}')
+NETWORK=$(sh gaudiBar.widget/lib/plugins/stats/network-traffic)
+
+echo $(cat <<-EOF
+{
+
+    "cpu": "$CPU",
+    "hdd": "$HDD",
+    "memory": "$MEMORY",
+    "network": "$NETWORK"
+
+}
+EOF
+)

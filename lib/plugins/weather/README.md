@@ -14,32 +14,27 @@ This widget shows:
 
 ## Requirements
 
-In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the weather widget folder that will contain the [DarkSky](https://darksky.net/dev) API key. The file should look like:
+In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the weather widget folder that will contain the [WeatherAPI](https://weatherapi.com) API key. The file should look like:
 
 ```js
 module.exports = {
-    apiKey: '<DARKSKY_API_KEY>'
+    apiKey: '<API_KEY>'
 }
 ```
 
 ## Customization
 
-This widget uses [Font Awesome](https://fontawesome.com/) to display the icons for each secion defined in the `MAPPINGS` map:
+This widget uses [Font Awesome](https://fontawesome.com/) to display the icons for each secion defined in the `WEATHER_ICONS` map:
 
 ```js
 const MAPPINGS = {
     icons: {
-        "rain"                :"fa-cloud-showers-heavy",
-        "snow"                :"fa-snowflake",
-        "fog"                 :"fa-smog",
-        "cloudy"              :"fa-cloud",
-        "wind"                :"fa-wind",
-        "clear-day"           :"fa-sun",
-        "mostly-clear-day"    :"fa-cloud-sun",
-        "partly-cloudy-day"   :"fa-cloud-sun-rain",
-        "clear-night"         :"fa-moon",
-        "partly-cloudy-night" :"fa-cloud-moon",
-        "unknown"             :"fa-temperature-high"
+        "Sunny": "fa-sun",
+        "Partly cloudy": "fa-cloud-sun",
+        "Cloudy": "fa-cloud",
+        "Overcast": "fa-cloud",
+        "Mist": "fa-smog",
+        ....
     }
 }
 ```

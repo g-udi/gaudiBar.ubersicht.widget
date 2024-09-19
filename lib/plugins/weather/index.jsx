@@ -1,78 +1,92 @@
 
 import { run, css } from "uebersicht"
 
-export const refreshFrequency= 100000;
+export const refreshFrequency = 100000;
 
 const gaudi_widget_weather = css`background: #3c5674`
 
 const SECRETS = require('./keys.secret');
-const EXCLUDES  = "minutely,hourly,alerts,flags";
-let GEO_LOCATION = {
-    latitude: 51.5074,
-    longitude: 0.1278
-}
-const MAPPINGS = {
-    icons: {
-        "rain"                :"fa-cloud-showers-heavy",
-        "snow"                :"fa-snowflake",
-        "fog"                 :"fa-smog",
-        "cloudy"              :"fa-cloud",
-        "wind"                :"fa-wind",
-        "clear-day"           :"fa-sun",
-        "mostly-clear-day"    :"fa-cloud-sun",
-        "partly-cloudy-day"   :"fa-cloud-sun-rain",
-        "clear-night"         :"fa-moon",
-        "partly-cloudy-night" :"fa-cloud-moon",
-        "unknown"             :"fa-temperature-high"
-    }
-}
+
+const WEATHER_ICONS = {
+  "Sunny": "fa-sun",
+  "Partly cloudy": "fa-cloud-sun",
+  "Cloudy": "fa-cloud",
+  "Overcast": "fa-cloud",
+  "Mist": "fa-smog",
+  "Patchy rain possible": "fa-cloud-rain",
+  "Patchy snow possible": "fa-snowflake",
+  "Patchy sleet possible": "fa-cloud-meatball",
+  "Patchy freezing drizzle possible": "fa-icicles",
+  "Thundery outbreaks possible": "fa-bolt",
+  "Blowing snow": "fa-wind",
+  "Blizzard": "fa-snowflake",
+  "Fog": "fa-smog",
+  "Freezing fog": "fa-smog",
+  "Patchy light drizzle": "fa-cloud-rain",
+  "Light drizzle": "fa-cloud-rain",
+  "Freezing drizzle": "fa-icicles",
+  "Heavy freezing drizzle": "fa-icicles",
+  "Patchy light rain": "fa-cloud-rain",
+  "Light rain": "fa-cloud-rain",
+  "Moderate rain at times": "fa-cloud-showers-heavy",
+  "Moderate rain": "fa-cloud-showers-heavy",
+  "Heavy rain at times": "fa-cloud-showers-heavy",
+  "Heavy rain": "fa-cloud-showers-heavy",
+  "Light freezing rain": "fa-icicles",
+  "Moderate or heavy freezing rain": "fa-icicles",
+  "Light sleet": "fa-cloud-meatball",
+  "Moderate or heavy sleet": "fa-cloud-meatball",
+  "Patchy light snow": "fa-snowflake",
+  "Light snow": "fa-snowflake",
+  "Patchy moderate snow": "fa-snowflake",
+  "Moderate snow": "fa-snowflake",
+  "Patchy heavy snow": "fa-snowflake",
+  "Heavy snow": "fa-snowflake",
+  "Ice pellets": "fa-icicles",
+  "Light rain shower": "fa-cloud-rain",
+  "Moderate or heavy rain shower": "fa-cloud-showers-heavy",
+  "Torrential rain shower": "fa-cloud-showers-heavy",
+  "Light sleet showers": "fa-cloud-meatball",
+  "Moderate or heavy sleet showers": "fa-cloud-meatball",
+  "Light snow showers": "fa-snowflake",
+  "Moderate or heavy snow showers": "fa-snowflake",
+  "Light showers of ice pellets": "fa-icicles",
+  "Moderate or heavy showers of ice pellets": "fa-icicles",
+  "Patchy light rain with thunder": "fa-bolt",
+  "Moderate or heavy rain with thunder": "fa-bolt",
+  "Patchy light snow with thunder": "fa-bolt",
+  "Moderate or heavy snow with thunder": "fa-bolt"
+};
+
 
 export const render = () => {
 
-    geolocation.getCurrentPosition((weather)=> {
-      GEO_LOCATION = {
-        latitude: weather.position.coords.latitude,
-        longitude: weather.position.coords.longitude
-      }
-    });
+  const CITY = "london";
 
-    const getIcon = (data) => {
-        if (!data) { return MAPPINGS.icons['unknown']; }
-        if (data.icon.indexOf('cloudy') > -1) {
-          if (data.cloudCover < 0.25) {
-            return MAPPINGS.icons["clear-day"];
-          } else if (data.cloudCover < 0.5) {
-            return MAPPINGS.icons["mostly-clear-day"];
-          } else if (data.cloudCover < 0.75) {
-            return MAPPINGS.icons["partly-cloudy-day"];
-          } else {
-            return MAPPINGS.icons["cloudy"];
-          }
-        } else {
-          return MAPPINGS.icons[data.icon];
-        }
+  return run(`curl -s 'http://api.weatherapi.com/v1/current.json?q=${CITY}&key=${SECRETS.apiKey}'`).then((output) => {
+    try {
+      
+      const weather = JSON.parse(output);
+
+      if (weather) {
+  
+        return (
+          <div className={`gaudi-bar-section-widget ${gaudi_widget_weather}`}>
+            <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/weather/style.css"></link>
+            {
+              <span>
+                <span className={`gaudi-icon fa fas ${WEATHER_ICONS[weather.current.condition.text]}`}></span>
+                <span className='temp'>
+                  <span className='hi'>{Math.round(weather.current.temp_c)}°</span>
+                </span>
+              </span>
+            }
+          </div>
+        );
+      } else return null;
+    } catch (error) {
+      console.log("[ERROR] Making Weather API Request", error);
     }
-
-    const WEATHER_URL = `https://api.forecast.io/forecast/${SECRETS.apiKey}/${GEO_LOCATION.latitude},${GEO_LOCATION.longitude}?units=auto&exclude=${EXCLUDES}`;
-
-    return run(`curl -s ${WEATHER_URL}`).then((output) => {
-        try {
-            const today = JSON.parse(output).daily.data[0]
-            return (
-                <div className={`gaudi-bar-section-widget ${gaudi_widget_weather}`}>
-                    <span className='today'>
-                        <span className={`gaudi-icon fa fas ${getIcon(today)}`}></span>
-                        <span className='temp'>
-                            <span className='hi'>{Math.round(today.temperatureMax)}°</span>
-                            <span>/ </span>
-                            <span className='lo'>{Math.round(today.temperatureMin)}°</span>
-                        </span>
-                    </span>
-                </div>
-            );
-        } catch(error) {
-            console.log("[ERROR] Making Weather API Request", error);
-        }
-    })
+  })
 
 }

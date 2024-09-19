@@ -26,8 +26,8 @@
     /* Rounded corner radius */
     /* Inner radius is best suited for when widgets appear independent */
     /* by setting --gaudi-opacity to 0 */
-    --gaudi-border-radius: 3px;
-    --gaudi-border-radius-inner: 3px;
+    --gaudi-border-radius: 0px;
+    --gaudi-border-radius-inner: 0px;
 
     /* Inner-horizontal padding.  --gaudi-height determines inner-vertical padding */
     --gaudi-text-padding: 3h;
@@ -117,6 +117,15 @@
     margin: 0 8px 0 0;
 }
 
+.gaudi-clickable:hover {
+    cursor: pointer;
+    opacity: .5;
+}
+
+.gaudi-icon-single {
+    margin: 0;
+}
+
 .gaudi-red {
     background-color: #ee5f5b;
 }
@@ -129,6 +138,24 @@
     background-color: #ecd211;
 }
 
-.gaudi-no-margin {
-    margin: 0;
+.gaudi_widget_details {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    display: flex;
+    border: 1px solid;
+    width: max-content;
+    visibility: hidden;
+    border: none;
+    border-radius: 0px;
+}
+
+.gaudi_widget_detail {
+    display: table;
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.gaudi-bar-section-widget:hover .gaudi_widget_details, .gaudi-bar-section-widget.hover .gaudi_widget_details{
+    visibility: visible;
 }

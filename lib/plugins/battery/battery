@@ -1,5 +1,12 @@
 #!/usr/bin/bash
 
-echo "$(sh gaudiBar.widget/lib/plugins/battery/battery_percentage_script)
-      @$(sh gaudiBar.widget/lib/plugins/battery/battery_charging_script)"
+PERCENTAGE=$(pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d'%')
+SOURCE=$(pmset -g batt | grep "'.*'" | sed "s/'//g" | cut -c 18-19)
 
+echo $(cat <<-EOF
+{
+    "percentage": "$PERCENTAGE",
+    "source": "$SOURCE"
+}
+EOF
+)

@@ -46,8 +46,9 @@ export const render = () => {
 
     return run(`bash gaudiBar.widget/lib/plugins/battery/battery`).then((output) => {
 
-        const values = output.split('@');
-        return (<div>{getBatteryStatus(values[0], values[1])}</div>)
+        const values = JSON.parse(output);
+        
+        return (<div>{getBatteryStatus(values.percentage, values.source)}</div>)
 
     })
 }

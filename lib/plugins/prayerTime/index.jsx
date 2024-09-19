@@ -3,7 +3,7 @@ import { run, css } from "uebersicht"
 
 export const refreshFrequency = 10000;
 
-const gaudi_widget_prayerTime = css`background: transparent`
+const gaudi_widget_prayerTime = css`background: #389cc1`
 
 let GEO_LOCATION = {
     latitude: 51.5074,
@@ -58,7 +58,7 @@ export const render = () => {
         }
     });
 
-    return run(`php -f gaudiBar.widget/lib/plugins/prayerTime/prayerTime.php calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}`).then((output) => {
+    return run(`/opt/homebrew/bin/php -f gaudiBar.widget/lib/plugins/prayerTime/prayerTime.php calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}`).then((output) => {
 
         let i;
 
@@ -93,13 +93,13 @@ export const render = () => {
                 <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/prayerTime/style.css"></link>
                 <span className="gaudi-icon far fa-clock"></span>
                 <span>{names[nextPrayerIndex]} {times[nextPrayerIndex]}</span>
-                <span className='gaudi_prayer_details'>
-                    <span className="gaudi_prayer_time"><i className="gaudi-icon fas fa-location-arrow"></i>{CONFIGURATIONS.location}</span>
+                <span className={`gaudi_widget_details ${gaudi_widget_prayerTime}`}>
+                    <span className="gaudi_widget_detail"><i className="gaudi-icon fas fa-location-arrow"></i>{CONFIGURATIONS.location}</span>
                     {
                         times.map((time, index) => {
                             {
                                 return (
-                                    <span key={index} className={`gaudi_prayer_time ${index == currentPrayerIndex ? 'gaudi_prayer_time-current' : ''}`}>
+                                    <span key={index} className={`gaudi_widget_detail ${index == currentPrayerIndex ? 'gaudi_prayer_time-current' : ''}`}>
                                         <span>{names[index]}: {times[index]}</span>
                                     </span>
                                 )

@@ -2,6 +2,7 @@ import { run, css } from "uebersicht"
 
 export const refreshFrequency = 100;
 
+const gaudi_widget_yabai=css`background: #000`
 const gaudi_application_title = css`color: #06F`
 
 export const render = () => {
@@ -103,37 +104,37 @@ export const render = () => {
 
     }
 
-    return run(`bash gaudiBar.widget/lib/plugins/chunkwm/chunkwm`).then((output) => {
+    return run(`bash gaudiBar.widget/lib/plugins/yabai/yabai`).then((output) => {
+        const yabai = JSON.parse(output);
 
-        const values = output.split('@');
+        if (yabai.activeWindow) {
 
-        const mode = values[0].replace(/^\s+|\s+$/g, "");
-        const activeWindow = values[3].split(',');
-        const app = activeWindow[0];
-        const title = activeWindow[1];
-
-        return (
-            <div className="gaudi-bar-section-widget">
-                <span className='gaudi-icon fas fa-desktop'></span>
-                <div>
-                    <span>{mode.toUpperCase()}</span>
-                    {
-                        !!app ? (
-                            <span>
-                                <span> | </span>
-                                <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
-                                <span>{app.toUpperCase()}</span>
-                                {
-                                    app.toLowerCase() != trimWindowName(title).toLowerCase() ?
-                                    (
-                                        <span> | {trimWindowName(title)}</span>
-                                    ) : null
-                                }
-                            </span>
-                        ) : null
-                    }
+            const app = yabai.activeWindow.app;
+            const title = yabai.activeWindow.title;
+    
+            return (
+                <div className={`gaudi-bar-section-widget ${gaudi_widget_yabai}`}>
+                    <span className='gaudi-icon fas fa-desktop'></span>
+                    <div>
+                        <span>{yabai.layout.type.toUpperCase()}</span>
+                        {
+                            !!app ? (
+                                <span>
+                                    <span> | </span>
+                                    <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
+                                    <span>{app.toUpperCase()}</span>
+                                    {
+                                        app.toLowerCase() != trimWindowName(title).toLowerCase() ?
+                                        (
+                                            <span> | {trimWindowName(title)}</span>
+                                        ) : null
+                                    }
+                                </span>
+                            ) : null
+                        }
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        } else return null;
     })
 }
