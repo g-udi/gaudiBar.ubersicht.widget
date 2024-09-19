@@ -4,8 +4,8 @@ gaudi-widgets are **extensible**, **adaptive** and **responsive** [Übersicht](h
 
 > tldr; Übersicht lets you run system commands and display their output on your desktop in little containers, called widgets
 
-![Gaudi Widgets](https://user-images.githubusercontent.com/550726/66969790-fd718200-f082-11e9-99db-63ea5e96f98a.png)
-*Screenshot of gaudi widgets on my desktop running [kitty](https://github.com/kovidgoyal/kitty) terminal*
+![2024-09-19 16 59 13](https://github.com/user-attachments/assets/c8421565-4339-4432-80a2-61b4a8533cee)
+*Screenshot of gaudi widgets on my desktop running [Cursor](https://www.cursor.com/) and [kitty](https://github.com/kovidgoyal/kitty) terminal*
 
 The main decision behind developing gaudi was to allow usage of adaptive widgets. If you have been using Übersicht you will know that to customize the location of any widget, you had to dig into the code and position it<sup> _most probably with absolute position_</sup>. For the case of information bars, I did not find that to be a good experience especially when the information is dynamic e.g.,
  
