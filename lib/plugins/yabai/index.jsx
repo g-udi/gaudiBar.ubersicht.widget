@@ -1,6 +1,7 @@
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency = 100;
+export const refreshFrequency = 2000;
 
 const gaudi_widget_yabai=css`background: #000`
 const gaudi_application_title = css`color: #06F`
@@ -36,7 +37,7 @@ export const render = () => {
 
         const APPLICATIONS_COLORS = {
             "google chrome": "#be222f",
-            "path finder": "##3385d7",
+            "path finder": "#3385d7",
             "kitty": "#32cd32",
             "system preferences": "#867C85",
             "evernote": "#2dbe60",
@@ -58,7 +59,7 @@ export const render = () => {
     const trimWindowName = (path) => {
 
         let file = "";
-        const wins = path;
+        const wins = String(path || "");
         let win = "";
         const winseg = wins.split('/');
         file = winseg[winseg.length - 1];
@@ -96,7 +97,7 @@ export const render = () => {
             win = `…${win}`;
         }
 
-        if (path === "") {
+        if (wins === "") {
             win = "…";
         }
 
@@ -104,8 +105,9 @@ export const render = () => {
 
     }
 
-    return run(`bash gaudiBar.widget/lib/plugins/yabai/yabai`).then((output) => {
-        const yabai = JSON.parse(output);
+    return Utils.runWithLocalEnv(`bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/yabai/yabai"`).then((output) => {
+        const yabai = Utils.parseJson(output);
+        if (!yabai || !yabai.activeWindow || !yabai.layout) return Utils.emptyWidget();
 
         if (yabai.activeWindow) {
 
@@ -116,7 +118,7 @@ export const render = () => {
                 <div className={`gaudi-bar-section-widget ${gaudi_widget_yabai}`}>
                     <span className='gaudi-icon fas fa-desktop'></span>
                     <div>
-                        <span>{yabai.layout.type.toUpperCase()}</span>
+                        <span>{String(yabai.layout.type || '').toUpperCase()}</span>
                         {
                             !!app ? (
                                 <span>
@@ -124,7 +126,7 @@ export const render = () => {
                                     <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
                                     <span>{app.toUpperCase()}</span>
                                     {
-                                        app.toLowerCase() != trimWindowName(title).toLowerCase() ?
+                                        app.toLowerCase() !== trimWindowName(title).toLowerCase() ?
                                         (
                                             <span> | {trimWindowName(title)}</span>
                                         ) : null
@@ -135,6 +137,6 @@ export const render = () => {
                     </div>
                 </div>
             )
-        } else return null;
-    })
+        } else return Utils.emptyWidget();
+    }).catch(() => Utils.emptyWidget())
 }

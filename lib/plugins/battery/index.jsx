@@ -1,7 +1,8 @@
 
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency= 10000;
+export const refreshFrequency = 30000;
 
 const gaudi_widget_battery = css`background: #06F`
 
@@ -14,7 +15,7 @@ export const render = () => {
      */
     const getBatteryStatus = (battery, state) => {
 
-        const batteryPercentage = parseInt(battery);
+        const batteryPercentage = parseInt(battery, 10);
 
         let batteryIcon, batteryColor;
 
@@ -36,7 +37,7 @@ export const render = () => {
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_battery} gaudi-${batteryColor}`}>
                 {
-                    state.includes('AC') ? (<span className={`fas fa-plug gaudi-icon`}></span>) : null
+                    state.includes('AC') ? (<span className="fas fa-plug gaudi-icon"></span>) : null
                 }
                 <span className={`fas ${batteryIcon} gaudi-icon`}></span>
                 <span>{batteryPercentage}%</span>
@@ -44,11 +45,12 @@ export const render = () => {
         )
       }
 
-    return run(`bash gaudiBar.widget/lib/plugins/battery/battery`).then((output) => {
+    return Utils.runWithLocalEnv(`bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/battery/battery"`).then((output) => {
 
-        const values = JSON.parse(output);
+        const values = Utils.parseJson(output);
+        if (!values || !values.percentage) return Utils.emptyWidget();
         
         return (<div>{getBatteryStatus(values.percentage, values.source)}</div>)
 
-    })
+    }).catch(() => Utils.emptyWidget())
 }

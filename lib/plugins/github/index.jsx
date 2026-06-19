@@ -1,9 +1,8 @@
 
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency= 1000000;
-
-const SECRETS = require('./keys.secret');
+export const refreshFrequency = 300000;
 
 const gaudi_widget_github = css`background: #7f8c8d`
 
@@ -13,6 +12,8 @@ export const render = () => {
         
         try {
             
+            if (!Array.isArray(data)) return Utils.emptyWidget();
+
             let totalNotifications = 0;
             
             const GITHUB_NOTIFICATIONS = {
@@ -33,8 +34,8 @@ export const render = () => {
             
             return (
                 <div className={`gaudi-bar-section-widget gaudi-widget-github ${gaudi_widget_github}`}>
-                <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/github/style.css"></link>
-                <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/github/fonts/octicons.css"></link>
+                <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/github/style.css')}></link>
+                <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/github/fonts/octicons.css')}></link>
                 <span className='fab fa-github gaudi-icon'></span>
                 <span>Github</span>
                 <span className="github_notifications_count">
@@ -68,22 +69,30 @@ export const render = () => {
             
             
         } catch (exception) {
-            console.log(exception)
+            console.error(exception)
             return null;
         }
-    })
+    }).catch(() => Utils.emptyWidget())
 }
 
 async function fetchAllNotifications() {
     let allNotifications = [];
     let page = 1;
     let hasMore = true;
+    const maxPages = 10;
+    const legacySecret = 'lib/plugins/github/keys.secret.js';
+    const tokenCommand = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; token="\${GAUDI_GITHUB_TOKEN:-}"; if [ -z "$token" ] && [ -f "$secret_file" ]; then token=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; printf "%s" "$token"`;
+    const hasToken = Utils.cleanupOutput(await Utils.runWithLocalEnv(tokenCommand)) !== '';
+
+    if (!hasToken) return null;
     
-    while (hasMore) {
-        const output = await run(`curl -s --user ${SECRETS.user}:${SECRETS.apiKey} -s 'https://api.github.com/notifications?participating=true&page=${page}&per_page=50'`);
-        const pageData = JSON.parse(output);
+    while (hasMore && page <= maxPages) {
+        const url = `https://api.github.com/notifications?participating=true&page=${page}&per_page=50`;
+        const command = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; token="\${GAUDI_GITHUB_TOKEN:-}"; if [ -z "$token" ] && [ -f "$secret_file" ]; then token=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; if [ -z "$token" ]; then printf '[]'; else curl -fsSL -H "Authorization: Bearer $token" -H "Accept: application/vnd.github+json" ${Utils.shellQuote(url)} || printf '[]'; fi`;
+        const output = await Utils.runWithLocalEnv(command);
+        const pageData = Utils.parseJson(output) || [];
         
-        if (pageData.length > 0) {
+        if (Array.isArray(pageData) && pageData.length > 0) {
             allNotifications = allNotifications.concat(pageData);
             page++;
         } else {

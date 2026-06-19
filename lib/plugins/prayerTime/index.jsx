@@ -1,7 +1,8 @@
 
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency = 10000;
+export const refreshFrequency = 60000;
 
 const gaudi_widget_prayerTime = css`background: #389cc1`
 
@@ -40,7 +41,7 @@ export const render = () => {
     const CONFIGURATIONS = {
         calcMethod: '2',
         asrMethod: '1',
-        timezone: '+1',
+        timezone: String(-new Date().getTimezoneOffset() / 60),
         location: `${GEO_LOCATION.city}, ${GEO_LOCATION.country}`,
         // # If false, times shows in 24Hour format, otherwise in 12Hour format (without AM/PM)
         hourFormat12: true,
@@ -49,22 +50,31 @@ export const render = () => {
         hideSunrise: true
     }
 
-    geolocation.getCurrentPosition((location)=> {
-        GEO_LOCATION = {
-          latitude: location.position.coords.latitude,
-          longitude: location.position.coords.longitude,
-          city: location.address.city,
-          country: location.address.country
-        }
-    });
+    if (typeof geolocation !== 'undefined' && geolocation.getCurrentPosition) {
+        geolocation.getCurrentPosition((location)=> {
+            GEO_LOCATION = {
+              latitude: location.position.coords.latitude,
+              longitude: location.position.coords.longitude,
+              city: (location.address && location.address.city) || GEO_LOCATION.city,
+              country: (location.address && location.address.country) || GEO_LOCATION.country
+            }
+        });
+    }
 
-    return run(`/opt/homebrew/bin/php -f gaudiBar.widget/lib/plugins/prayerTime/prayerTime.php calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}`).then((output) => {
+    const command = `if command -v php >/dev/null 2>&1; then php -f "$GAUDI_BAR_WIDGET_DIR/lib/plugins/prayerTime/prayerTime.php" calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}; fi`;
+
+    return Utils.runWithLocalEnv(command).then((output) => {
+        if (!output) return Utils.emptyWidget();
 
         let i;
 
         const lines = output.split(/\n/);
+        if (!lines[0] || !lines[1]) return Utils.emptyWidget();
+
         const names = lines[0].split(",");
         const times = lines[1].split(",");
+
+        if (!names.length || !times.length) return Utils.emptyWidget();
 
         const hideTime = (time) => {
             names.splice(time, 1);
@@ -90,26 +100,24 @@ export const render = () => {
 
         return (
             <div className={`gaudi-bar-section-widget gaudi-widget-prayerTime ${gaudi_widget_prayerTime}`}>
-                <link rel="stylesheet" type="text/css" href="gaudiBar.widget/lib/plugins/prayerTime/style.css"></link>
+                <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/prayerTime/style.css')}></link>
                 <span className="gaudi-icon far fa-clock"></span>
                 <span>{names[nextPrayerIndex]} {times[nextPrayerIndex]}</span>
                 <span className={`gaudi_widget_details ${gaudi_widget_prayerTime}`}>
                     <span className="gaudi_widget_detail"><i className="gaudi-icon fas fa-location-arrow"></i>{CONFIGURATIONS.location}</span>
                     {
                         times.map((time, index) => {
-                            {
-                                return (
-                                    <span key={index} className={`gaudi_widget_detail ${index == currentPrayerIndex ? 'gaudi_prayer_time-current' : ''}`}>
-                                        <span>{names[index]}: {times[index]}</span>
-                                    </span>
-                                )
-                            }
+                            return (
+                                <span key={index} className={`gaudi_widget_detail ${index === currentPrayerIndex ? 'gaudi_prayer_time-current' : ''}`}>
+                                    <span>{names[index]}: {times[index]}</span>
+                                </span>
+                            )
                         })
                     }
                 </span>
             </div>
         )
-    })
+    }).catch(() => Utils.emptyWidget())
 
 
 }

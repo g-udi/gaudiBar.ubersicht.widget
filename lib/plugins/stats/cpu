@@ -1,3 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-ps -axC -o %cpu | awk '{s+=$1} END {print s}'
+CORES=$(sysctl -n hw.ncpu 2>/dev/null || printf '1')
+ps -A -o %cpu | awk -v cores="$CORES" '{s+=$1} END {if (cores > 0) printf "%.1f\n", s / cores; else printf "%.1f\n", s}'

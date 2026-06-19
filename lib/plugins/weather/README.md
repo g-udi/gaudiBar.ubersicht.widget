@@ -2,7 +2,7 @@
 
 ![weather-widget](https://user-images.githubusercontent.com/550726/67053847-7da6ee80-f13a-11e9-9d16-bd7bd6e180c8.png)
 
-| Refresh Frequency             | 10000                                                                   |
+| Refresh Frequency             | 600000                                                                  |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
@@ -14,13 +14,7 @@ This widget shows:
 
 ## Requirements
 
-In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the weather widget folder that will contain the [WeatherAPI](https://weatherapi.com) API key. The file should look like:
-
-```js
-module.exports = {
-    apiKey: '<API_KEY>'
-}
-```
+Set `GAUDI_WEATHER_API_KEY` in the widget `.env` file. See the root `.env.example`.
 
 ## Customization
 

@@ -4,9 +4,12 @@
 
 This widget displays the current application and its icon on macOS using the yabai scripting addition.
 
+| Refresh Frequency | 2000 |
+|-------------------|------|
+
 ## Features:
 - Displays the currently focused application
-- Updates every 10 seconds to reflect system changes
+- Updates every 2 seconds to reflect system changes
 - Uses Font Awesome icons for application icons
 
 ## Usage:
@@ -15,5 +18,4 @@ This widget displays the current application and its icon on macOS using the yab
 
 ## Note:
 This widget requires the Yabai scripting addition to be installed and configured properly. Make sure to check out the [yabai documentation](https://github.com/koekeishiya/yabai) for more details on how to set it up.
-
 

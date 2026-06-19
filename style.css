@@ -30,7 +30,7 @@
     --gaudi-border-radius-inner: 0px;
 
     /* Inner-horizontal padding.  --gaudi-height determines inner-vertical padding */
-    --gaudi-text-padding: 3h;
+    --gaudi-text-padding: 3px;
 
     /* Mono font recommended (alignment depends on character width) */
     --gaudi-font: scientifica, SF Mono, Menlo;

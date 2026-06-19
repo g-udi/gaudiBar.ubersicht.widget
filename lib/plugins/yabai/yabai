@@ -1,38 +1,33 @@
-yabai_path="/opt/homebrew/bin/yabai"
+#!/usr/bin/env bash
 
-pgrep -x yabai > /dev/null
+json_error() {
+  printf '{"activeWindow":null,"layout":null,"error":"%s"}\n' "$1"
+}
 
-if [ $? -eq 1 ]; then
-  echo "yabai_error"
+if command -v yabai >/dev/null 2>&1; then
+  yabai_path=$(command -v yabai)
+elif [[ -x /opt/homebrew/bin/yabai ]]; then
+  yabai_path="/opt/homebrew/bin/yabai"
+elif [[ -x /usr/local/bin/yabai ]]; then
+  yabai_path="/usr/local/bin/yabai"
+else
+  json_error "yabai_not_installed"
   exit 0
 fi
 
-layout=$($yabai_path -m query --spaces --space)
+if ! pgrep -x yabai >/dev/null 2>&1; then
+  json_error "yabai_not_running"
+  exit 0
+fi
+
+layout=$("$yabai_path" -m query --spaces --space 2>/dev/null)
 if [ -z "$layout" ]; then
   layout="null"
 fi
 
-current_window=$($yabai_path -m query --windows --window)
+current_window=$("$yabai_path" -m query --windows --window 2>/dev/null)
 if [ -z "$current_window" ]; then
   current_window="null"
 fi
 
-spaces=$($yabai_path -m query --spaces)
-if [ -z "$spaces" ]; then
-  spaces=$($yabai_path -m query --spaces)
-fi
-
-$yabai_path -m signal --add event=space_changed action="osascript -e 'tell application id \"tracesOf.Uebersicht\" to refresh widget id \"gaudiBar-widget-main-jsx\"'" label="Refresh simple-bar-lite on space change"
-$yabai_path -m signal --add event=window_focused action="osascript -e 'tell application id \"tracesOf.Uebersicht\" to refresh widget id \"gaudiBar-widget-main-jsx\"'" label="Refresh simple-bar-lite when focused application changes"
-$yabai_path -m signal --add event=application_front_switched action="osascript -e 'tell application id \"tracesOf.Uebersicht\" to refresh widget id \"gaudiBar-widget-main-jsx\"'" label="Refresh simple-bar-lite when front application switched application changes"
-$yabai_path -m signal --add event=window_destroyed action="osascript -e 'tell application id \"tracesOf.Uebersicht\" to refresh widget id \"gaudiBar-widget-main-jsx\"'" label="Refresh simple-bar-lite when an application window is closed"
-$yabai_path -m signal --add event=window_title_changed action="osascript -e 'tell application id \"tracesOf.Uebersicht\" to refresh widget id \"gaudiBar-widget-main-jsx\"'" label="Refresh simple-bar-lite when current window title changes"
-
-echo $(cat <<-EOF
-  {
-    "activeWindow": $current_window,
-    "spaces": $spaces,
-    "layout": $layout
-  }
-EOF
-)
+printf '{"activeWindow":%s,"layout":%s}\n' "$current_window" "$layout"
