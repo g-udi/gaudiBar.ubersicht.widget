@@ -1,35 +1,44 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-SERVICES=$(networksetup -listnetworkserviceorder | grep 'Hardware Port')
-
-while read line; do
-    sname=$(echo $line | awk -F  "(, )|(: )|[)]" '{print $2}')
-    sdev=$(echo $line | awk -F  "(, )|(: )|[)]" '{print $4}')
-
-    if [ -n "$sdev" ]; then
-        ifconfig $sdev 2>/dev/null | grep 'status: active' > /dev/null 2>&1
-        rc="$?"
-        if [ "$rc" -eq 0 ]; then
-            CURRENT_SERVICE="$sname"
-            break
-        fi
-    fi
-done <<< "$(echo "$SERVICES")"
-
-#!/usr/bin/bash
-
-WIFI_STATUS=$(ifconfig en0 | grep status | cut -c 10-)
-WIFI_SSID=$(networksetup -getairportnetwork en0 | cut -c 24-)
-IP_ADDRESS=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
-
-echo $(cat <<-EOF
-{
-
-    "service": "$CURRENT_SERVICE",
-    "status": "$WIFI_STATUS",
-    "ssid": "$WIFI_SSID",
-    "ip": "$IP_ADDRESS"
+json_escape() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
-EOF
-)
 
+CURRENT_SERVICE=""
+CURRENT_DEVICE=""
+SERVICES=$(networksetup -listnetworkserviceorder 2>/dev/null | grep 'Hardware Port' || true)
+
+while IFS= read -r line; do
+    service_name=$(printf '%s\n' "$line" | awk -F '(, )|(: )|[)]' '{print $2}')
+    service_device=$(printf '%s\n' "$line" | awk -F '(, )|(: )|[)]' '{print $4}')
+
+    if [[ -n "$service_device" ]] && ifconfig "$service_device" 2>/dev/null | grep -q 'status: active'; then
+        CURRENT_SERVICE="$service_name"
+        CURRENT_DEVICE="$service_device"
+        break
+    fi
+done <<< "$SERVICES"
+
+WIFI_STATUS=""
+WIFI_SSID=""
+IP_ADDRESS=""
+
+if [[ -n "$CURRENT_DEVICE" ]]; then
+    WIFI_STATUS=$(ifconfig "$CURRENT_DEVICE" 2>/dev/null | awk -F': ' '/status:/ {print $2; exit}')
+    IP_ADDRESS=$(ifconfig "$CURRENT_DEVICE" 2>/dev/null | awk '/inet / && $2 != "127.0.0.1" {print $2; exit}')
+fi
+
+if [[ "$CURRENT_SERVICE" == "Wi-Fi" || "$CURRENT_SERVICE" == "AirPort" ]]; then
+    wifi_output=$(networksetup -getairportnetwork "$CURRENT_DEVICE" 2>/dev/null || true)
+    case "$wifi_output" in
+        "Current Wi-Fi Network: "*)
+            WIFI_SSID=${wifi_output#Current Wi-Fi Network: }
+            ;;
+    esac
+fi
+
+printf '{"service":"%s","status":"%s","ssid":"%s","ip":"%s"}\n' \
+    "$(json_escape "$CURRENT_SERVICE")" \
+    "$(json_escape "$WIFI_STATUS")" \
+    "$(json_escape "$WIFI_SSID")" \
+    "$(json_escape "$IP_ADDRESS")"

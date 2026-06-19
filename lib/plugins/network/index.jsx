@@ -1,7 +1,8 @@
 
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency= 10000;
+export const refreshFrequency = 30000;
 
 const gaudi_widget_network = css`background: #173b53`
 
@@ -12,9 +13,9 @@ export const render = () => {
         let output = '--', icon = 'fa-wifi';
 
         if (status === "Wi-Fi") {
-            output = netName;
+            output = netName || '--';
         } else if ((status === 'USB 10/100/1000 LAN') || (status === 'Apple USB Ethernet Adapter')) {
-            output = netIP;
+            output = netIP || '--';
             icon = 'fa-ethernet'
         }
         return (
@@ -25,14 +26,15 @@ export const render = () => {
         )
     }
 
-    return run(`bash gaudiBar.widget/lib/plugins/network/network`).then((output) => {
+    return Utils.runWithLocalEnv(`bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/network/network"`).then((output) => {
 
-        const values = JSON.parse(output);
+        const values = Utils.parseJson(output);
+        if (!values) return Utils.emptyWidget();
         
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_network}`}>
-                {getNetworkStatus(values.service.replace(/^\s+|\s+$/g, ""), values.ssid, values.ip)}
+                {getNetworkStatus(String(values.service || '').trim(), values.ssid, values.ip)}
             </div>
         )
-    })
+    }).catch(() => Utils.emptyWidget())
 }

@@ -1,13 +1,12 @@
 
-import { run, css } from "uebersicht"
+import { css } from "uebersicht"
+import * as Utils from '../../utils'
 
-export const refreshFrequency = 1000;
+export const refreshFrequency = 5000;
 
 const gaudi_widget_stats = css`background-color: none; margin-left: -15px`
 const gaudi_color_green = css`color: #32cd32`
 const gaudi_color_red = css`color: #be222f`
-
-const NUMBER_OF_CORES = 6;
 
 export const render = () => {
 
@@ -17,7 +16,7 @@ export const render = () => {
      */
     const getCPU = (cpu) => {
 
-        let cpuNum = (parseFloat(cpu) / NUMBER_OF_CORES).toFixed(1);
+        let cpuNum = parseFloat(cpu).toFixed(1);
         let cpuString = String(cpuNum);
         if (cpuNum < 10) {
             cpuString = `0${cpuString}`;
@@ -54,24 +53,23 @@ export const render = () => {
      */
     const getNetTraffic = (down, up) => {
 
-        const usageFormat = (kb) => {
-            if (kb / 1024 < 0.01) {
-                return "0.00MB";
-            }
-            return isNaN(parseFloat((kb/1024).toFixed(2))) ? '0.0MB' : `${parseFloat((kb/1024).toFixed(2))}MB`;
+        const usageFormat = (bytes) => {
+            const amount = parseFloat(bytes);
+
+            if (!Number.isFinite(amount) || amount <= 0) return '0.0KB/s';
+            if (amount >= 1024 * 1024) return `${(amount / 1024 / 1024).toFixed(1)}MB/s`;
+            if (amount >= 1024) return `${(amount / 1024).toFixed(1)}KB/s`;
+            return `${Math.round(amount)}B/s`;
         }
 
-        const convertBytes = (bytes) => {
-            return usageFormat(bytes / 1024);
-        }
+        const downString = usageFormat(down);
+        const upString = usageFormat(up);
 
-        const downString = convertBytes(parseInt(down)) == NaN ? '-' : convertBytes(parseInt(down));
-        const upString = convertBytes(parseInt(up)) == NaN ? '-' : convertBytes(parseInt(up));
         return (
             <span>
-                <span className={`gaudi-icon ${gaudi_color_green}`}> ↑ </span><span>{downString}</span>
+                <span className={`gaudi-icon ${gaudi_color_green}`}> ↓ </span><span>{downString}</span>
                 <span> ⎢ </span>
-                <span className={`gaudi-icon ${gaudi_color_red}`}> ↓ </span><span>{upString}</span>
+                <span className={`gaudi-icon ${gaudi_color_red}`}> ↑ </span><span>{upString}</span>
             </span>
         )
     }
@@ -88,18 +86,19 @@ export const render = () => {
         );
     }
 
-    return run(`bash gaudiBar.widget/lib/plugins/stats/stats`).then((output) => {
+    return Utils.runWithLocalEnv(`bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/stats/stats"`).then((output) => {
 
-        const values = JSON.parse(output);
+        const values = Utils.parseJson(output);
+        if (!values) return Utils.emptyWidget();
 
         // create an HTML string to be displayed by the widget
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_stats}`}>
                 <span className="gaudi-bar-section-widget-section">{getCPU(values.cpu)}</span>
-                <span className="gaudi-bar-section-widget-section">{getFreeSpace(values.hdd.replace('Gi', '').trim())}</span>
+                <span className="gaudi-bar-section-widget-section">{getFreeSpace(String(values.hdd || '').replace('Gi', '').trim())}</span>
                 <span className="gaudi-bar-section-widget-section">{getMem(values.memory)}</span>
-                <span className="gaudi-bar-section-widget-section">{getNetTraffic(values.network.split('@')[0], values.network.split('@')[1])}</span>
+                <span className="gaudi-bar-section-widget-section">{getNetTraffic(String(values.network || '@').split('@')[0], String(values.network || '@').split('@')[1])}</span>
             </div>
         )
-    })
+    }).catch(() => Utils.emptyWidget())
 }

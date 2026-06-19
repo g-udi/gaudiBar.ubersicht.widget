@@ -2,7 +2,7 @@
 
 ![battery-widget](https://user-images.githubusercontent.com/550726/66969708-905dec80-f082-11e9-9ad5-84b9ab9b32d9.png)
 
-| Refresh Frequency             | 10000                                                                   |
+| Refresh Frequency             | 30000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:

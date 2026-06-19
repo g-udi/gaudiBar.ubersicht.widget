@@ -1,8 +1,11 @@
-#!/usr/bin/bash
-function getBytes {
-    netstat -w1 > gaudiBar.widget/lib/plugins/stats/network.out & sleep 1.5; kill $!;
-}
-BYTES=$(getBytes > /dev/null);
-BYTES=$(cat gaudiBar.widget/lib/plugins/stats/network.out | grep '[0-9].*');
-BYTES=$(echo $BYTES | awk '{print $3 "@" $6}');
-echo $BYTES;
+#!/usr/bin/env bash
+
+netstat -w1 2>/dev/null | awk '
+    /^[[:space:]]*[0-9]/ {
+        sample_count += 1
+        if (sample_count >= 2) {
+            print $3 "@" $6
+            exit
+        }
+    }
+'

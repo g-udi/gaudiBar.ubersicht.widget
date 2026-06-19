@@ -2,15 +2,10 @@
 
 ![crypto-widget](https://user-images.githubusercontent.com/550726/66969792-fd718200-f082-11e9-886a-7a7d75b49784.png)
 
-> [!IMPORTANT]  
-> You must create a `keys.secret.js` file in the crypto plugin directory and add your CoinMarketCap API key. The file should look like this:
-> ```js
-> module.exports = {
->     apiKey: 'YOUR_API_KEY_HERE'
-> };
-> ``
+> [!IMPORTANT]
+> Set `GAUDI_COINMARKETCAP_API_KEY` in the widget `.env` file. See the root `.env.example`.
 
-| Refresh Frequency             | 1000000                                                                   |
+| Refresh Frequency             | 900000                                                                    |
 |-------------------------------|-----------------------------------------------------------------------
 
 This widget shows:
@@ -34,6 +29,4 @@ module.exports =  {
     secondary: ["doge", "eth", "dash", "strat", "steem"]
 };
 ```
-
-
 

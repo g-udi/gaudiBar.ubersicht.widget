@@ -2,7 +2,7 @@
 
 ![github-widget](https://user-images.githubusercontent.com/550726/66969791-fd718200-f082-11e9-8408-702375f2442d.png)
 
-| Refresh Frequency             | 1000000                                                                   |
+| Refresh Frequency             | 300000                                                                    |
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
@@ -19,15 +19,9 @@ This widget pop-over shows number of notifications received for:
 
 ## Requirements
 
-In order for the data to be fetched correctly from the API, you need to create a file called `keys.secret.js` inside the github widget folder that will contain the Github username for whom you want to fetch the information for and a [token](https://github.com/settings/tokens). The file should look like:
+Set `GAUDI_GITHUB_TOKEN` in the widget `.env` file. See the root `.env.example`.
 
-```js
-module.exports = {
-    user: '<GITHUB_USERNAME>',
-    apiKey: '<GITHUB_ACCESS_TOKEN>'
-}
-```
-> For more information on creating a personal access token, check [this Github article](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)
+For more information on creating a personal access token, check [this Github article](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line).
 
 ## Customization
 

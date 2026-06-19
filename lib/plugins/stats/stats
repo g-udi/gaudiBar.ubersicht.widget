@@ -1,18 +1,9 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-CPU=$(ps -axC -o %cpu | awk '{s+=$1} END {print s}')
-HDD=$(df -h | grep -m 1 /disk1 | awk -F" " '{print $4}')
-MEMORY=$(ps -A -o %mem | awk '{s+=$1} END {print "" s}')
-NETWORK=$(sh gaudiBar.widget/lib/plugins/stats/network-traffic)
+CORES=$(sysctl -n hw.ncpu 2>/dev/null || printf '1')
+CPU=$(ps -A -o %cpu | awk -v cores="$CORES" '{s+=$1} END {if (cores > 0) printf "%.1f", s / cores; else printf "%.1f", s}')
+HDD=$(df -g / | awk 'NR == 2 {print $4}')
+MEMORY=$(ps -A -o %mem | awk '{s+=$1} END {printf "%.1f", s}')
+NETWORK=$(bash "${GAUDI_BAR_WIDGET_DIR:-gaudiBar.ubersicht.widget}/lib/plugins/stats/network-traffic")
 
-echo $(cat <<-EOF
-{
-
-    "cpu": "$CPU",
-    "hdd": "$HDD",
-    "memory": "$MEMORY",
-    "network": "$NETWORK"
-
-}
-EOF
-)
+printf '{"cpu":"%s","hdd":"%s","memory":"%s","network":"%s"}\n' "$CPU" "$HDD" "$MEMORY" "$NETWORK"
