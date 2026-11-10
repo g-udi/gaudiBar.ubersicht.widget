@@ -20,17 +20,17 @@ To overcome this, gaudi uses `flex` layout capabilities and a module per widget 
 
 ## Widgets
 
-- [battery](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/battery)
-- [crypto](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/crypto)
-- [date](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/date)
-- [dnd](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/dnd)
-- [github](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/github)
-- [network](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/network)
-- [prayertime](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/prayerTime)
-- [stats](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/stats)
-- [time](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/time)
-- [weather](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/weather)
-- [yabai](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/master/lib/plugins/yabai)
+- [battery](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/battery)
+- [crypto](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/crypto)
+- [date](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/date)
+- [dnd](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/dnd)
+- [github](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/github)
+- [network](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/network)
+- [prayertime](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/prayerTime)
+- [stats](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/stats)
+- [time](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/time)
+- [weather](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/weather)
+- [yabai](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/yabai)
 
 ## Installation
 
