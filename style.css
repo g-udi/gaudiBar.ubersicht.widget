@@ -159,3 +159,14 @@
 .gaudi-bar-section-widget:hover .gaudi_widget_details, .gaudi-bar-section-widget.hover .gaudi_widget_details{
     visibility: visible;
 }
+
+.gaudi-warning {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    font-size: 11px;
+    color: #fff;
+    background-color: #ee5f5b;
+}

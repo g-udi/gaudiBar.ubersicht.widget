@@ -1,11 +1,11 @@
-# gaudi-widgets
+# gaudiBar
 
-gaudi-widgets are **extensible**, **adaptive** and **responsive** [Übersicht](http://tracesof.net/uebersicht/) system information bars.
+gaudiBar is a set of **extensible**, **adaptive** and **responsive** [Übersicht](http://tracesof.net/uebersicht/) system information bars, built from small widgets.
 
 > tldr; Übersicht lets you run system commands and display their output on your desktop in little containers, called widgets.
 
 ![2024-09-19 16 59 13](https://github.com/user-attachments/assets/c8421565-4339-4432-80a2-61b4a8533cee)
-*Screenshot of gaudi widgets on my desktop running [Cursor](https://www.cursor.com/) and [kitty](https://github.com/kovidgoyal/kitty) terminal.*
+*Screenshot of gaudiBar on my desktop running [Cursor](https://www.cursor.com/) and [kitty](https://github.com/kovidgoyal/kitty) terminal.*
 
 The main decision behind developing gaudi was to allow usage of adaptive widgets. If you have been using Übersicht you will know that to customize the location of any widget, you had to dig into the code and position it, most probably with absolute positioning. For the case of information bars, I did not find that to be a good experience especially when the information is dynamic, for example:
 
@@ -44,6 +44,8 @@ git clone https://github.com/g-udi/gaudiBar.ubersicht.widget "$widgets_dir/gaudi
 ```
 
 You can always find your widgets folder by clicking the Übersicht menu bar icon and choosing **Open Widgets Folder**.
+
+The folder name is not significant: the widget looks up its own folder at runtime, so a clone under another name keeps its styles, fonts and scripts.
 
 Some widgets require optional tools or credentials. Each widget documents its own requirements under `lib/plugins/<plugin>/README.md`.
 
@@ -95,9 +97,10 @@ GAUDI_WEATHER_API_KEY=
 GAUDI_WEATHER_CITY=london
 GAUDI_COINMARKETCAP_API_KEY=
 GAUDI_GITHUB_TOKEN=
+GAUDI_DND_SHORTCUT=
 ```
 
-Legacy ignored `keys.secret.js` files are still read for compatibility, but new installs should use `.env`.
+`.env` is sourced by the shell, so quote values that contain spaces or special characters. Legacy ignored `keys.secret.js` files are still read for compatibility, but new installs should use `.env`. Tokens and API keys are handed to `curl` on standard input, so they do not show up in the process list.
 
 ## Layout
 
@@ -138,11 +141,19 @@ const PLUGIN_LOADERS = {
 
 Each plugin can expose its own `refreshFrequency`. The main widget wakes once per second, checks the configured widgets, and only refreshes a plugin when its interval has elapsed. Slow commands cannot overlap with themselves, and optional/unconfigured widgets return no output instead of crashing the whole bar.
 
+A plugin that exports `refreshOnSignal = true` is also refreshed straight away whenever Übersicht is asked to refresh the widget from outside, which is how the [yabai](lib/plugins/yabai) plugin reacts to yabai signals:
+
+```sh
+osascript -e 'tell application id "tracesOf.Uebersicht" to refresh widget id "gaudiBar-ubersicht-widget-main-jsx"'
+```
+
+The widget id is the path of `main.jsx` inside the widgets folder with `/` and `.` replaced by `-` (and spaces by `_`).
+
 ### Shell scripts and environment
 
-Shell-backed widgets run through helper functions in `lib/utils.js`. These helpers load `.env`, export the widget directory as `GAUDI_BAR_WIDGET_DIR`, quote shell arguments safely, and keep the widget path compatible with the current `gaudiBar.ubersicht.widget` directory name.
+Shell-backed widgets run through helper functions in `lib/utils.js`. These helpers find the widget folder, export it as `GAUDI_BAR_WIDGET_DIR`, load `.env`, quote shell arguments safely, and read credentials (`readSecret`) without exposing them on a command line.
 
-External commands are macOS-oriented. `yabai` and `php` are discovered from `PATH`; if they are unavailable, the related widgets stay hidden or return an empty state.
+External commands are macOS-oriented. `php` is discovered from `PATH`, and `yabai` from `PATH` or the usual Homebrew locations; if they are unavailable, the related widgets stay hidden or return an empty state.
 
 ## Development
 
@@ -152,7 +163,7 @@ Run the smoke test before committing changes:
 ./test/smoke.sh
 ```
 
-The smoke test checks shell syntax, ShellCheck when available, committed secret/runtime artifacts, static secret imports, and stale runtime paths.
+The smoke test checks shell syntax, ShellCheck when available, committed secret/runtime artifacts, static secret imports, stale runtime paths, that the dnd plugin stays read-only, and that no secret is passed to `curl` as an argument.
 
 ## Credits & Inspirations
 

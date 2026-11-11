@@ -75,30 +75,30 @@ export const render = () => {
     }).catch(() => Utils.emptyWidget())
 }
 
+const PER_PAGE = 50;
+const MAX_PAGES = 10;
+const NO_TOKEN = 'no-token';
+
 async function fetchAllNotifications() {
     let allNotifications = [];
-    let page = 1;
-    let hasMore = true;
-    const maxPages = 10;
-    const legacySecret = 'lib/plugins/github/keys.secret.js';
-    const tokenCommand = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; token="\${GAUDI_GITHUB_TOKEN:-}"; if [ -z "$token" ] && [ -f "$secret_file" ]; then token=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; printf "%s" "$token"`;
-    const hasToken = Utils.cleanupOutput(await Utils.runWithLocalEnv(tokenCommand)) !== '';
 
-    if (!hasToken) return null;
-    
-    while (hasMore && page <= maxPages) {
-        const url = `https://api.github.com/notifications?participating=true&page=${page}&per_page=50`;
-        const command = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; token="\${GAUDI_GITHUB_TOKEN:-}"; if [ -z "$token" ] && [ -f "$secret_file" ]; then token=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; if [ -z "$token" ]; then printf '[]'; else curl -fsSL -H "Authorization: Bearer $token" -H "Accept: application/vnd.github+json" ${Utils.shellQuote(url)} || printf '[]'; fi`;
+    for (let page = 1; page <= MAX_PAGES; page++) {
+        const url = `https://api.github.com/notifications?participating=true&page=${page}&per_page=${PER_PAGE}`;
+        // The token is fed to curl on stdin so it never appears in the process list
+        const command = `${Utils.readSecret('GAUDI_GITHUB_TOKEN', 'lib/plugins/github/keys.secret.js')}; if [ -z "$secret" ]; then printf '${NO_TOKEN}'; else ${Utils.curlSecretConfig('header', 'Authorization: Bearer ')} | curl -fsSL --config - -H "Accept: application/vnd.github+json" ${Utils.shellQuote(url)} || printf '[]'; fi`;
         const output = await Utils.runWithLocalEnv(command);
-        const pageData = Utils.parseJson(output) || [];
-        
-        if (Array.isArray(pageData) && pageData.length > 0) {
-            allNotifications = allNotifications.concat(pageData);
-            page++;
-        } else {
-            hasMore = false;
-        }
+
+        // Not configured: hide the widget instead of showing zero notifications
+        if (Utils.cleanupOutput(output) === NO_TOKEN) return null;
+
+        const pageData = Utils.parseJson(output);
+        if (!Array.isArray(pageData)) break;
+
+        allNotifications = allNotifications.concat(pageData);
+
+        // A short page is the last one, no need to ask for another
+        if (pageData.length < PER_PAGE) break;
     }
-    
+
     return allNotifications;
 }

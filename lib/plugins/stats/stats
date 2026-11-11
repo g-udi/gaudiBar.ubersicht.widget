@@ -1,9 +1,33 @@
 #!/usr/bin/env bash
 
+# CPU: summed per-process usage, normalised by the number of cores.
 CORES=$(sysctl -n hw.ncpu 2>/dev/null || printf '1')
 CPU=$(ps -A -o %cpu | awk -v cores="$CORES" '{s+=$1} END {if (cores > 0) printf "%.1f", s / cores; else printf "%.1f", s}')
-HDD=$(df -g / | awk 'NR == 2 {print $4}')
-MEMORY=$(ps -A -o %mem | awk '{s+=$1} END {printf "%.1f", s}')
-NETWORK=$(bash "${GAUDI_BAR_WIDGET_DIR:-gaudiBar.ubersicht.widget}/lib/plugins/stats/network-traffic")
 
-printf '{"cpu":"%s","hdd":"%s","memory":"%s","network":"%s"}\n' "$CPU" "$HDD" "$MEMORY" "$NETWORK"
+# Disk: free space on / in GB.
+HDD=$(df -g / | awk 'NR == 2 {print $4}')
+
+# Memory: app memory + wired + compressed as a share of physical memory,
+# the same "Memory Used" figure Activity Monitor reports.
+MEMORY=$(vm_stat | awk -v total="$(sysctl -n hw.memsize 2>/dev/null || printf '0')" '
+    /page size of/               {for (i = 1; i <= NF; i++) if ($i == "of") page = $(i + 1)}
+    /^Pages active/              {active = $NF}
+    /^Pages wired down/          {wired = $NF}
+    /^Pages purgeable/           {purgeable = $NF}
+    /^Anonymous pages/           {anonymous = $NF}
+    /^Pages occupied by compressor/ {compressed = $NF}
+    END {
+        app = (anonymous > 0) ? anonymous - purgeable : active
+        used = (app + wired + compressed) * page
+        percent = (total > 0) ? used / total * 100 : 0
+        if (percent > 100) percent = 100
+        printf "%.1f", percent
+    }')
+
+# Network: cumulative bytes in/out over the physical (en*) interfaces. The widget
+# turns two consecutive readings into a rate, so nothing blocks to take a sample.
+NETWORK=$(netstat -ib | awk '
+    $1 ~ /^en[0-9]+\*?$/ && $3 ~ /^<Link#/ {rx += $(NF - 4); tx += $(NF - 1)}
+    END {printf "\"rx\":%.0f,\"tx\":%.0f", rx, tx}')
+
+printf '{"cpu":"%s","hdd":"%s","memory":"%s",%s}\n' "$CPU" "$HDD" "$MEMORY" "$NETWORK"

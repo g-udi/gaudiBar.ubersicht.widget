@@ -7,28 +7,29 @@
 
 This widget shows:
 
- - High/Low temperature in the current location
- - Icon that corresponds to the current weather conditions (rain, snow, fog, cloudy, wind, clear, mostly clear, partly cloudy, clear night, party cloudy night and unkown)
+ - The current temperature (°C) for the configured city
+ - An icon that corresponds to the current weather conditions, with night variants for clear and partly cloudy skies
 
-> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
+The data comes from the [WeatherAPI](https://www.weatherapi.com/) `current.json` endpoint.
 
 ## Requirements
 
-Set `GAUDI_WEATHER_API_KEY` in the widget `.env` file. See the root `.env.example`.
+Set these variables in the widget `.env` file. See the root `.env.example`.
+
+| Variable | Description |
+|----------|-------------|
+| `GAUDI_WEATHER_API_KEY` | Your WeatherAPI key. Without it the widget stays hidden. |
+| `GAUDI_WEATHER_CITY` | Anything WeatherAPI accepts as a location: a city name, a postcode or `lat,lon`. Defaults to `london`. |
 
 ## Customization
 
-This widget uses [Font Awesome](https://fontawesome.com/) to display the icons for each secion defined in the `WEATHER_ICONS` map:
+This widget uses [Font Awesome](https://fontawesome.com/) to display the icons defined in the `WEATHER_ICONS` map of `index.jsx`. The map is keyed on the WeatherAPI [condition code](https://www.weatherapi.com/docs/weather_conditions.json); `night` is used when the API reports `is_day: 0`, and unknown codes fall back to `fa-cloud`:
 
 ```js
-const MAPPINGS = {
-    icons: {
-        "Sunny": "fa-sun",
-        "Partly cloudy": "fa-cloud-sun",
-        "Cloudy": "fa-cloud",
-        "Overcast": "fa-cloud",
-        "Mist": "fa-smog",
-        ....
-    }
-}
+const WEATHER_ICONS = {
+  1000: { day: "fa-sun", night: "fa-moon" },                // Sunny / Clear
+  1003: { day: "fa-cloud-sun", night: "fa-cloud-moon" },    // Partly cloudy
+  1006: { day: "fa-cloud" },                                // Cloudy
+  ....
+};
 ```

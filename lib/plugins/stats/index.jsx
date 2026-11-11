@@ -8,6 +8,35 @@ const gaudi_widget_stats = css`background-color: none; margin-left: -15px`
 const gaudi_color_green = css`color: #32cd32`
 const gaudi_color_red = css`color: #be222f`
 
+// Previous cumulative byte counters, used to turn two readings into a rate.
+let previousTraffic = null;
+
+/* @function getTrafficRates
+ * @description converts the cumulative byte counters into bytes per second since the previous refresh
+ * @parameter <Number> rx total bytes received
+ * @parameter <Number> tx total bytes sent
+ */
+const getTrafficRates = (rx, tx) => {
+    const current = { rx: Number(rx), tx: Number(tx), at: Date.now() };
+    const previous = previousTraffic;
+    let rates = { down: 0, up: 0 };
+
+    if (!Number.isFinite(current.rx) || !Number.isFinite(current.tx)) return rates;
+
+    if (previous && current.at > previous.at) {
+        const seconds = (current.at - previous.at) / 1000;
+
+        // Counters restart from zero after a reboot or when an interface goes away
+        rates = {
+            down: Math.max(0, current.rx - previous.rx) / seconds,
+            up: Math.max(0, current.tx - previous.tx) / seconds
+        };
+    }
+
+    previousTraffic = current;
+    return rates;
+}
+
 export const render = () => {
 
     /* @function getCPU
@@ -28,9 +57,9 @@ export const render = () => {
         );
     }
 
-    /* @function getCPU
-     * @description renders the CPU utilization percentage. The calculation takes into account the number of cores for the CPU
-     * @parameter <String> cpu the raw CPU utilization
+    /* @function getMem
+     * @description renders the share of physical memory in use
+     * @parameter <String> mem the memory usage percentage
      */
     const getMem = (mem) => {
 
@@ -48,8 +77,8 @@ export const render = () => {
 
     /* @function getNetTraffic
      * @description renders the network utilization for both upload and download
-     * @parameter <String> down the download rate in bytes
-     * @parameter <String> up the upload rate in bytes
+     * @parameter <Number> down the download rate in bytes per second
+     * @parameter <Number> up the upload rate in bytes per second
      */
     const getNetTraffic = (down, up) => {
 
@@ -91,13 +120,15 @@ export const render = () => {
         const values = Utils.parseJson(output);
         if (!values) return Utils.emptyWidget();
 
+        const traffic = getTrafficRates(values.rx, values.tx);
+
         // create an HTML string to be displayed by the widget
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_stats}`}>
                 <span className="gaudi-bar-section-widget-section">{getCPU(values.cpu)}</span>
                 <span className="gaudi-bar-section-widget-section">{getFreeSpace(String(values.hdd || '').replace('Gi', '').trim())}</span>
                 <span className="gaudi-bar-section-widget-section">{getMem(values.memory)}</span>
-                <span className="gaudi-bar-section-widget-section">{getNetTraffic(String(values.network || '@').split('@')[0], String(values.network || '@').split('@')[1])}</span>
+                <span className="gaudi-bar-section-widget-section">{getNetTraffic(traffic.down, traffic.up)}</span>
             </div>
         )
     }).catch(() => Utils.emptyWidget())
