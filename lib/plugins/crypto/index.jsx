@@ -12,8 +12,8 @@ export const render = () => {
 
     const symbols = COINS.primary.concat(COINS.secondary).join(',').toUpperCase();
     const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${encodeURIComponent(symbols)}&convert=${encodeURIComponent(COINS.currency || 'USD')}`;
-    const legacySecret = 'lib/plugins/crypto/keys.secret.js';
-    const command = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; api_key="\${GAUDI_COINMARKETCAP_API_KEY:-}"; if [ -z "$api_key" ] && [ -f "$secret_file" ]; then api_key=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; if [ -z "$api_key" ]; then printf ''; else curl -fsSL -H "X-CMC_PRO_API_KEY: $api_key" ${Utils.shellQuote(url)} || true; fi`;
+    // The key is fed to curl on stdin so it never appears in the process list
+    const command = `${Utils.readSecret('GAUDI_COINMARKETCAP_API_KEY', 'lib/plugins/crypto/keys.secret.js')}; if [ -n "$secret" ]; then ${Utils.curlSecretConfig('header', 'X-CMC_PRO_API_KEY: ')} | curl -fsSL --config - ${Utils.shellQuote(url)} || true; fi`;
 
     return Utils.runWithLocalEnv(command).then((output) => {
         try {

@@ -6,14 +6,14 @@
 |-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
- - Battery charge status (pluggin in or disconnected from AC source)
+ - Battery charge status (plugged in or disconnected from AC source)
  - Current charge percentage
  - Adaptive color status and icons to reflect the charge percentage
 
 | Charge Percentage | Icon                      | Color  |
 |-------------------|---------------------------|--------|
-| >= 90%            | fa-battery-full           | <span style="color:blue">blue</span>   |
-| >= 50 && < 90     | fa-battery-three-quarters | <span style="color:blue">blue</span>   |
+| >= 90%            | fa-battery-full           | <span style="color:blue">blue</span> (default)   |
+| >= 50 && < 90     | fa-battery-three-quarters | <span style="color:blue">blue</span> (default)   |
 | >= 25 && < 50     | fa-battery-half           | <span style="color:orange">orange</span> |
 | >= 10 && < 25     | fa-battery-quarter        | <span style="color:yellow">yellow</span> |
 | < 10              | fa-battery-empty          | <span style="color:red">red</span>    |

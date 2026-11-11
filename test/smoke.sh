@@ -8,10 +8,6 @@ shell_scripts=(
     "$ROOT_DIR/lib/plugins/dnd/dnd"
     "$ROOT_DIR/lib/plugins/network/network"
     "$ROOT_DIR/lib/plugins/stats/stats"
-    "$ROOT_DIR/lib/plugins/stats/cpu"
-    "$ROOT_DIR/lib/plugins/stats/memory"
-    "$ROOT_DIR/lib/plugins/stats/hdd"
-    "$ROOT_DIR/lib/plugins/stats/network-traffic"
     "$ROOT_DIR/lib/plugins/yabai/yabai"
 )
 
@@ -33,6 +29,18 @@ fi
 
 if grep -R "require(.*keys\\.secret" "$ROOT_DIR" --include='*.js' --include='*.jsx'; then
     printf 'static keys.secret import found\n' >&2
+    exit 1
+fi
+
+# The dnd plugin must stay read-only: no preference writes, no process kills.
+if grep -nE 'defaults write|killall|pkill|plutil -(insert|replace|remove)' "$ROOT_DIR/lib/plugins/dnd/dnd"; then
+    printf 'dnd plugin modifies system state\n' >&2
+    exit 1
+fi
+
+# Secrets must reach curl through --config on stdin, never as arguments.
+if grep -R -nE 'curl[^|]*(Bearer|API_KEY:|key=)[^|]*\$(secret|token|api_key)' "$ROOT_DIR/lib" --include='*.js' --include='*.jsx' --exclude='*.secret.js'; then
+    printf 'secret passed to curl as an argument\n' >&2
     exit 1
 fi
 

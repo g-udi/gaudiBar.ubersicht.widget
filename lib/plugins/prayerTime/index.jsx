@@ -2,15 +2,32 @@
 import { css } from "uebersicht"
 import * as Utils from '../../utils'
 
+// The next prayer is re-evaluated every minute; the times themselves are computed once a day
 export const refreshFrequency = 60000;
 
 const gaudi_widget_prayerTime = css`background: #389cc1`
 
 let GEO_LOCATION = {
     latitude: 51.5074,
-    longitude: 0.1278,
+    longitude: -0.1278,
     city: 'London',
     country: 'UK'
+}
+
+// Output of prayerTime.php for one day and one set of parameters
+let cachedTimes = { key: null, output: null };
+
+const getPrayerTimes = (parameters) => {
+    const key = `${new Date().toDateString()} ${parameters}`;
+
+    if (cachedTimes.key === key && cachedTimes.output) return Promise.resolve(cachedTimes.output);
+
+    const command = `if command -v php >/dev/null 2>&1; then php -f "$GAUDI_BAR_WIDGET_DIR/lib/plugins/prayerTime/prayerTime.php" ${parameters}; fi`;
+
+    return Utils.runWithLocalEnv(command).then((output) => {
+        if (output) cachedTimes = { key, output };
+        return output;
+    });
 }
 
 /*
@@ -34,7 +51,7 @@ let GEO_LOCATION = {
         3. latitude  : Latitude
         4. longitude : Longitude
         5. timezone  : Timezone
-    Note: You can find your latitude/longitude visiting http://freegeoip.net/ or from google map or so.
+    Note: latitude/longitude come from Übersicht's geolocation, with GEO_LOCATION above as the fallback.
 */
 export const render = () => {
     
@@ -43,8 +60,6 @@ export const render = () => {
         asrMethod: '1',
         timezone: String(-new Date().getTimezoneOffset() / 60),
         location: `${GEO_LOCATION.city}, ${GEO_LOCATION.country}`,
-        // # If false, times shows in 24Hour format, otherwise in 12Hour format (without AM/PM)
-        hourFormat12: true,
         // As Mugrib and Sunset times are same, It is preffered to hide Sunset column
         hideSunset: true,
         hideSunrise: true
@@ -61,9 +76,9 @@ export const render = () => {
         });
     }
 
-    const command = `if command -v php >/dev/null 2>&1; then php -f "$GAUDI_BAR_WIDGET_DIR/lib/plugins/prayerTime/prayerTime.php" calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}; fi`;
+    const parameters = `calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}`;
 
-    return Utils.runWithLocalEnv(command).then((output) => {
+    return getPrayerTimes(parameters).then((output) => {
         if (!output) return Utils.emptyWidget();
 
         let i;

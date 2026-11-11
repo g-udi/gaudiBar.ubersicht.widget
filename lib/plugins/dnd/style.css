@@ -1,7 +1,11 @@
-.gaudi-dnd-enabled {
+.gaudi-dnd-on {
     background: #c0392b;
 }
 
-.gaudi-dnd-disabled {
+.gaudi-dnd-off {
     background: #8e44ad;
+}
+
+.gaudi-dnd-unknown {
+    background: #7f8c8d;
 }

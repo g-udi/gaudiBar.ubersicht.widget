@@ -6,63 +6,73 @@ export const refreshFrequency = 600000;
 
 const gaudi_widget_weather = css`background: #3c5674`
 
+// WeatherAPI condition codes (https://www.weatherapi.com/docs/weather_conditions.json).
+// Codes are stable across languages; `night` is used when `is_day` is 0.
 const WEATHER_ICONS = {
-  "Sunny": "fa-sun",
-  "Partly cloudy": "fa-cloud-sun",
-  "Cloudy": "fa-cloud",
-  "Overcast": "fa-cloud",
-  "Mist": "fa-smog",
-  "Patchy rain possible": "fa-cloud-rain",
-  "Patchy snow possible": "fa-snowflake",
-  "Patchy sleet possible": "fa-cloud-meatball",
-  "Patchy freezing drizzle possible": "fa-icicles",
-  "Thundery outbreaks possible": "fa-bolt",
-  "Blowing snow": "fa-wind",
-  "Blizzard": "fa-snowflake",
-  "Fog": "fa-smog",
-  "Freezing fog": "fa-smog",
-  "Patchy light drizzle": "fa-cloud-rain",
-  "Light drizzle": "fa-cloud-rain",
-  "Freezing drizzle": "fa-icicles",
-  "Heavy freezing drizzle": "fa-icicles",
-  "Patchy light rain": "fa-cloud-rain",
-  "Light rain": "fa-cloud-rain",
-  "Moderate rain at times": "fa-cloud-showers-heavy",
-  "Moderate rain": "fa-cloud-showers-heavy",
-  "Heavy rain at times": "fa-cloud-showers-heavy",
-  "Heavy rain": "fa-cloud-showers-heavy",
-  "Light freezing rain": "fa-icicles",
-  "Moderate or heavy freezing rain": "fa-icicles",
-  "Light sleet": "fa-cloud-meatball",
-  "Moderate or heavy sleet": "fa-cloud-meatball",
-  "Patchy light snow": "fa-snowflake",
-  "Light snow": "fa-snowflake",
-  "Patchy moderate snow": "fa-snowflake",
-  "Moderate snow": "fa-snowflake",
-  "Patchy heavy snow": "fa-snowflake",
-  "Heavy snow": "fa-snowflake",
-  "Ice pellets": "fa-icicles",
-  "Light rain shower": "fa-cloud-rain",
-  "Moderate or heavy rain shower": "fa-cloud-showers-heavy",
-  "Torrential rain shower": "fa-cloud-showers-heavy",
-  "Light sleet showers": "fa-cloud-meatball",
-  "Moderate or heavy sleet showers": "fa-cloud-meatball",
-  "Light snow showers": "fa-snowflake",
-  "Moderate or heavy snow showers": "fa-snowflake",
-  "Light showers of ice pellets": "fa-icicles",
-  "Moderate or heavy showers of ice pellets": "fa-icicles",
-  "Patchy light rain with thunder": "fa-bolt",
-  "Moderate or heavy rain with thunder": "fa-bolt",
-  "Patchy light snow with thunder": "fa-bolt",
-  "Moderate or heavy snow with thunder": "fa-bolt"
+  1000: { day: "fa-sun", night: "fa-moon" },                // Sunny / Clear
+  1003: { day: "fa-cloud-sun", night: "fa-cloud-moon" },    // Partly cloudy
+  1006: { day: "fa-cloud" },                                // Cloudy
+  1009: { day: "fa-cloud" },                                // Overcast
+  1030: { day: "fa-smog" },                                 // Mist
+  1063: { day: "fa-cloud-rain" },                           // Patchy rain possible
+  1066: { day: "fa-snowflake" },                            // Patchy snow possible
+  1069: { day: "fa-cloud-meatball" },                       // Patchy sleet possible
+  1072: { day: "fa-icicles" },                              // Patchy freezing drizzle possible
+  1087: { day: "fa-bolt" },                                 // Thundery outbreaks possible
+  1114: { day: "fa-wind" },                                 // Blowing snow
+  1117: { day: "fa-snowflake" },                            // Blizzard
+  1135: { day: "fa-smog" },                                 // Fog
+  1147: { day: "fa-smog" },                                 // Freezing fog
+  1150: { day: "fa-cloud-rain" },                           // Patchy light drizzle
+  1153: { day: "fa-cloud-rain" },                           // Light drizzle
+  1168: { day: "fa-icicles" },                              // Freezing drizzle
+  1171: { day: "fa-icicles" },                              // Heavy freezing drizzle
+  1180: { day: "fa-cloud-rain" },                           // Patchy light rain
+  1183: { day: "fa-cloud-rain" },                           // Light rain
+  1186: { day: "fa-cloud-showers-heavy" },                  // Moderate rain at times
+  1189: { day: "fa-cloud-showers-heavy" },                  // Moderate rain
+  1192: { day: "fa-cloud-showers-heavy" },                  // Heavy rain at times
+  1195: { day: "fa-cloud-showers-heavy" },                  // Heavy rain
+  1198: { day: "fa-icicles" },                              // Light freezing rain
+  1201: { day: "fa-icicles" },                              // Moderate or heavy freezing rain
+  1204: { day: "fa-cloud-meatball" },                       // Light sleet
+  1207: { day: "fa-cloud-meatball" },                       // Moderate or heavy sleet
+  1210: { day: "fa-snowflake" },                            // Patchy light snow
+  1213: { day: "fa-snowflake" },                            // Light snow
+  1216: { day: "fa-snowflake" },                            // Patchy moderate snow
+  1219: { day: "fa-snowflake" },                            // Moderate snow
+  1222: { day: "fa-snowflake" },                            // Patchy heavy snow
+  1225: { day: "fa-snowflake" },                            // Heavy snow
+  1237: { day: "fa-icicles" },                              // Ice pellets
+  1240: { day: "fa-cloud-rain" },                           // Light rain shower
+  1243: { day: "fa-cloud-showers-heavy" },                  // Moderate or heavy rain shower
+  1246: { day: "fa-cloud-showers-heavy" },                  // Torrential rain shower
+  1249: { day: "fa-cloud-meatball" },                       // Light sleet showers
+  1252: { day: "fa-cloud-meatball" },                       // Moderate or heavy sleet showers
+  1255: { day: "fa-snowflake" },                            // Light snow showers
+  1258: { day: "fa-snowflake" },                            // Moderate or heavy snow showers
+  1261: { day: "fa-icicles" },                              // Light showers of ice pellets
+  1264: { day: "fa-icicles" },                              // Moderate or heavy showers of ice pellets
+  1273: { day: "fa-bolt" },                                 // Patchy light rain with thunder
+  1276: { day: "fa-bolt" },                                 // Moderate or heavy rain with thunder
+  1279: { day: "fa-bolt" },                                 // Patchy light snow with thunder
+  1282: { day: "fa-bolt" }                                  // Moderate or heavy snow with thunder
 };
 
+const DEFAULT_WEATHER_ICON = "fa-cloud";
+
+const getWeatherIcon = (current) => {
+  const icons = WEATHER_ICONS[(current.condition || {}).code];
+  if (!icons) return DEFAULT_WEATHER_ICON;
+
+  return (current.is_day === 0 && icons.night) || icons.day;
+};
 
 export const render = () => {
 
   const endpoint = 'https://api.weatherapi.com/v1/current.json';
-  const legacySecret = 'lib/plugins/weather/keys.secret.js';
-  const command = `secret_file="$GAUDI_BAR_WIDGET_DIR/${legacySecret}"; api_key="\${GAUDI_WEATHER_API_KEY:-}"; city="\${GAUDI_WEATHER_CITY:-london}"; if [ -z "$api_key" ] && [ -f "$secret_file" ]; then api_key=$(sed -n "s/.*apiKey:[[:space:]]*['\\\"]\\([^'\\\"]*\\).*/\\1/p" "$secret_file" | head -n 1); fi; if [ -z "$api_key" ]; then printf ''; else curl -fsSL --get --data-urlencode "q=$city" --data-urlencode "key=$api_key" ${Utils.shellQuote(endpoint)} || true; fi`;
+  // The key is fed to curl on stdin so it never appears in the process list
+  const command = `${Utils.readSecret('GAUDI_WEATHER_API_KEY', 'lib/plugins/weather/keys.secret.js')}; city="\${GAUDI_WEATHER_CITY:-london}"; if [ -n "$secret" ]; then ${Utils.curlSecretConfig('data-urlencode', 'key=')} | curl -fsSL --get --data-urlencode "q=$city" --config - ${Utils.shellQuote(endpoint)} || true; fi`;
 
   return Utils.runWithLocalEnv(command).then((output) => {
     try {
@@ -77,7 +87,7 @@ export const render = () => {
             <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/weather/style.css')}></link>
             {
               <span>
-                <span className={`gaudi-icon fa fas ${WEATHER_ICONS[weather.current.condition.text] || 'fa-cloud'}`}></span>
+                <span className={`gaudi-icon fa fas ${getWeatherIcon(weather.current)}`}></span>
                 <span className='temp'>
                   <span className='hi'>{Math.round(weather.current.temp_c)}°</span>
                 </span>

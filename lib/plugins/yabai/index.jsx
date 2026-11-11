@@ -1,7 +1,11 @@
 import { css } from "uebersicht"
 import * as Utils from '../../utils'
 
-export const refreshFrequency = 2000;
+// Fallback poll. For instant updates add the yabai signals from the README:
+// they ask Übersicht to refresh the widget, and plugins with `refreshOnSignal`
+// are then refreshed straight away instead of waiting for this interval.
+export const refreshFrequency = 10000;
+export const refreshOnSignal = true;
 
 const gaudi_widget_yabai=css`background: #000`
 const gaudi_application_title = css`color: #06F`
@@ -14,11 +18,11 @@ export const render = () => {
             "google chrome": "fab fa-chrome",
             "path finder": "fab fa-apple",
             "messages": "fas fa-comments",
-            "fantastical 2": "fas fa-calendar",
+            "fantastical": "fas fa-calendar",
+            "calendar": "fas fa-calendar",
             "kitty": "fas fa-terminal",
             "finder": "fab fa-apple",
-            "system preferences": "fas fa-cogs",
-            "station": "fab fa-artstation",
+            "system settings": "fas fa-cogs",
             "evernote": "fab fa-evernote",
             "todoist": "fa fa-list",
             "gitkraken": "fab fa-gitkraken",
@@ -39,7 +43,7 @@ export const render = () => {
             "google chrome": "#be222f",
             "path finder": "#3385d7",
             "kitty": "#32cd32",
-            "system preferences": "#867C85",
+            "system settings": "#867C85",
             "evernote": "#2dbe60",
             "todoist": "#db4c3f",
             "gitkraken": "#169287",
@@ -109,34 +113,31 @@ export const render = () => {
         const yabai = Utils.parseJson(output);
         if (!yabai || !yabai.activeWindow || !yabai.layout) return Utils.emptyWidget();
 
-        if (yabai.activeWindow) {
+        const app = yabai.activeWindow.app;
+        const title = trimWindowName(yabai.activeWindow.title);
 
-            const app = yabai.activeWindow.app;
-            const title = yabai.activeWindow.title;
-    
-            return (
-                <div className={`gaudi-bar-section-widget ${gaudi_widget_yabai}`}>
-                    <span className='gaudi-icon fas fa-desktop'></span>
-                    <div>
-                        <span>{String(yabai.layout.type || '').toUpperCase()}</span>
-                        {
-                            !!app ? (
-                                <span>
-                                    <span> | </span>
-                                    <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
-                                    <span>{app.toUpperCase()}</span>
-                                    {
-                                        app.toLowerCase() !== trimWindowName(title).toLowerCase() ?
-                                        (
-                                            <span> | {trimWindowName(title)}</span>
-                                        ) : null
-                                    }
-                                </span>
-                            ) : null
-                        }
-                    </div>
+        return (
+            <div className={`gaudi-bar-section-widget ${gaudi_widget_yabai}`}>
+                <span className='gaudi-icon fas fa-desktop'></span>
+                <div>
+                    <span>{String(yabai.layout.type || '').toUpperCase()}</span>
+                    {
+                        !!app ? (
+                            <span>
+                                <span> | </span>
+                                <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
+                                <span>{app.toUpperCase()}</span>
+                                {
+                                    app.toLowerCase() !== title.toLowerCase() ?
+                                    (
+                                        <span> | {title}</span>
+                                    ) : null
+                                }
+                            </span>
+                        ) : null
+                    }
                 </div>
-            )
-        } else return Utils.emptyWidget();
+            </div>
+        )
     }).catch(() => Utils.emptyWidget())
 }

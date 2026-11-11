@@ -10,6 +10,7 @@ const SECONDARY_BARS = ["left", "middle", "right"];
 const DEFAULT_PLUGIN_REFRESH = 10000;
 
 const pluginState = {};
+let lastTick = 0;
 
 const configuredPlugins = () => {
     const seen = {};
@@ -29,11 +30,14 @@ const configuredPlugins = () => {
     }, []);
 };
 
-const shouldRefreshPlugin = (pluginName, plugin, now) => {
+const shouldRefreshPlugin = (pluginName, plugin, now, forced) => {
     const state = pluginState[pluginName] || {};
     const refreshInterval = plugin.refreshFrequency || DEFAULT_PLUGIN_REFRESH;
 
-    return !state.inFlight && (!state.lastRun || now - state.lastRun >= refreshInterval);
+    if (state.inFlight) return false;
+    if (forced && plugin.refreshOnSignal) return true;
+
+    return !state.lastRun || now - state.lastRun >= refreshInterval;
 };
 
 const renderPlugin = (pluginName, plugin, dispatch, now) => {
@@ -58,6 +62,12 @@ const renderPlugin = (pluginName, plugin, dispatch, now) => {
 export const command = (dispatch) => {
     const now = Date.now();
 
+    // Timer ticks are never less than refreshFrequency apart, so an earlier call is a
+    // refresh requested from outside (e.g. a yabai signal running
+    // `osascript -e 'tell application id "tracesOf.Uebersicht" to refresh widget id "..."'`).
+    const forced = lastTick > 0 && now - lastTick < refreshFrequency - 50;
+    lastTick = now;
+
     configuredPlugins().forEach((pluginName) => {
         const plugin = PLUGINS.get(pluginName);
 
@@ -66,20 +76,22 @@ export const command = (dispatch) => {
             return;
         }
 
-        if (shouldRefreshPlugin(pluginName, plugin, now)) {
+        if (shouldRefreshPlugin(pluginName, plugin, now, forced)) {
             renderPlugin(pluginName, plugin, dispatch, now);
         }
     });
 };
 
-export const render = ({state}) => {
+export const render = ({state, warning}) => {
     const widgetState = state || {};
-    
+
     try {
         return <div className="gaudi">
 
-            <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/fonts/css/fonts.css')}></link>
-            <link rel="stylesheet" type="text/css" href={`/${Utils.widgetPath('style.css')}`} />
+            <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/fonts/css/fonts.css')} />
+            <link rel="stylesheet" type="text/css" href={Utils.widgetPath('style.css')} />
+
+            {warning ? <div className="gaudi-warning">{warning}</div> : null}
 
             {PRIMARY_BARS.map((primaryBar, index) => {
                 return <div key={`bar-${primaryBar}-${index}`} className={`gaudi-bar__${primaryBar}`}>

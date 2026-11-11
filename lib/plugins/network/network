@@ -21,24 +21,56 @@ done <<< "$SERVICES"
 
 WIFI_STATUS=""
 WIFI_SSID=""
+SSID_REDACTED="false"
 IP_ADDRESS=""
+TYPE=""
+
+# macOS hides the SSID ("<redacted>") from processes without Location Services access.
+clean_ssid() {
+    case "$1" in
+        *redacted*) SSID_REDACTED="true" ;;
+        *) WIFI_SSID="$1" ;;
+    esac
+}
 
 if [[ -n "$CURRENT_DEVICE" ]]; then
-    WIFI_STATUS=$(ifconfig "$CURRENT_DEVICE" 2>/dev/null | awk -F': ' '/status:/ {print $2; exit}')
-    IP_ADDRESS=$(ifconfig "$CURRENT_DEVICE" 2>/dev/null | awk '/inet / && $2 != "127.0.0.1" {print $2; exit}')
-fi
+    DEVICE_INFO=$(ifconfig -v "$CURRENT_DEVICE" 2>/dev/null)
+    WIFI_STATUS=$(printf '%s\n' "$DEVICE_INFO" | awk -F': ' '/status:/ {print $2; exit}')
+    IP_ADDRESS=$(printf '%s\n' "$DEVICE_INFO" | awk '/inet / && $2 != "127.0.0.1" {print $2; exit}')
+    DEVICE_TYPE=$(printf '%s\n' "$DEVICE_INFO" | awk -F': ' '/^[[:space:]]*type:/ {print $2; exit}')
 
-if [[ "$CURRENT_SERVICE" == "Wi-Fi" || "$CURRENT_SERVICE" == "AirPort" ]]; then
-    wifi_output=$(networksetup -getairportnetwork "$CURRENT_DEVICE" 2>/dev/null || true)
-    case "$wifi_output" in
-        "Current Wi-Fi Network: "*)
-            WIFI_SSID=${wifi_output#Current Wi-Fi Network: }
-            ;;
+    # Classify by interface type; the port name is only a fallback for old macOS.
+    case "${DEVICE_TYPE:-$CURRENT_SERVICE}" in
+        Wi-Fi|AirPort) TYPE="wifi" ;;
+        *) TYPE="wired" ;;
     esac
 fi
 
-printf '{"service":"%s","status":"%s","ssid":"%s","ip":"%s"}\n' \
+if [[ "$TYPE" == "wifi" ]]; then
+    ssid_line=$(ipconfig getsummary "$CURRENT_DEVICE" 2>/dev/null | awk -F' SSID : ' '/^[[:space:]]*SSID : / {print $2; exit}')
+
+    if [[ -n "$ssid_line" ]]; then
+        clean_ssid "$ssid_line"
+    else
+        # Older macOS: ipconfig has no SSID field, networksetup still answers.
+        wifi_output=$(networksetup -getairportnetwork "$CURRENT_DEVICE" 2>/dev/null || true)
+        case "$wifi_output" in
+            "Current Wi-Fi Network: "*)
+                clean_ssid "${wifi_output#Current Wi-Fi Network: }"
+                ;;
+            *)
+                # Last resort, slow (several seconds).
+                clean_ssid "$(system_profiler SPAirPortDataType 2>/dev/null | awk '
+                    /Current Network Information:/ {getline; gsub(/^[[:space:]]+|:[[:space:]]*$/, ""); print; exit}')"
+                ;;
+        esac
+    fi
+fi
+
+printf '{"service":"%s","type":"%s","status":"%s","ssid":"%s","ssidRedacted":%s,"ip":"%s"}\n' \
     "$(json_escape "$CURRENT_SERVICE")" \
+    "$TYPE" \
     "$(json_escape "$WIFI_STATUS")" \
     "$(json_escape "$WIFI_SSID")" \
+    "$SSID_REDACTED" \
     "$(json_escape "$IP_ADDRESS")"

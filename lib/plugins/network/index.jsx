@@ -8,14 +8,15 @@ const gaudi_widget_network = css`background: #173b53`
 
 export const render = () => {
 
-    const getNetworkStatus = (status, netName, netIP) => {
+    const getNetworkStatus = ({ type, ssid, ssidRedacted, ip }) => {
 
         let output = '--', icon = 'fa-wifi';
 
-        if (status === "Wi-Fi") {
-            output = netName || '--';
-        } else if ((status === 'USB 10/100/1000 LAN') || (status === 'Apple USB Ethernet Adapter')) {
-            output = netIP || '--';
+        if (type === 'wifi') {
+            // macOS may refuse to disclose the SSID; fall back to a generic label
+            output = ssid || (ssidRedacted ? 'Wi-Fi' : '--');
+        } else if (type === 'wired') {
+            output = ip || '--';
             icon = 'fa-ethernet'
         }
         return (
@@ -33,7 +34,7 @@ export const render = () => {
         
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_network}`}>
-                {getNetworkStatus(String(values.service || '').trim(), values.ssid, values.ip)}
+                {getNetworkStatus(values)}
             </div>
         )
     }).catch(() => Utils.emptyWidget())

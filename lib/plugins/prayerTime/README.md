@@ -8,6 +8,8 @@
 | Refresh Frequency             | 60000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
 
+The upcoming prayer is re-evaluated every minute. The prayer times themselves are computed (with PHP) once per day and location, then served from memory.
+
 This widget shows:
  - The time for the upcoming prayer
 
@@ -16,7 +18,7 @@ This widget pop-over shows:
  - the prayer times for the current day in the identified location
  - the current (last) prayer time highlighted in green
 
-> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object
+> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object in `index.jsx` (latitude, longitude, city and country; it defaults to London, UK)
 
 ## Configuration
 
@@ -41,14 +43,12 @@ You can adjust various setting in the `CONFIGURATIONS` map:
 
         0: Shafii (standard)
         1: Hanafi
-        3. latitude  : Latitude
-        4. longitude : Longitude
-        5. timezone  : Timezone
- 3. `timezone`: the current location timezone
+
+ 3. `timezone`: the UTC offset in hours (set automatically from the system clock)
  4. `location`: the city and country (set automatically from the geo object)
- 5. `hoursformat12`: if false, times shows in 24Hour format, otherwise in 12Hour format (without AM/PM)
- 6. `hideSunset`: as Mugrib and Sunset times are same, It is preffered to hide Sunset
- 7. `hideSunrise`: hide sunrise time (default: `true`)
+ 5. `hideSunset`: as Maghrib and Sunset times are the same, it is preferred to hide Sunset (default: `true`)
+ 6. `hideSunrise`: hide sunrise time (default: `true`)
 
+Times are shown in 24-hour format.
 
-> Note: You can find your latitude/longitude [here](http://freegeoip.net/) or from google map or so.
+> Note: if you need to set the fallback `GEO_LOCATION` by hand, you can read your latitude/longitude from any maps application. West longitudes are negative.

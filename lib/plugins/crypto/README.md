@@ -6,27 +6,28 @@
 > Set `GAUDI_COINMARKETCAP_API_KEY` in the widget `.env` file. See the root `.env.example`.
 
 | Refresh Frequency             | 900000                                                                    |
-|-------------------------------|-----------------------------------------------------------------------
+|-------------------------------|-------------------------------------------------------------------------|
 
 This widget shows:
  - The status of primary coins you track directly on the desktop
  - A pop-over that shows the status of the secondary coins on hover
- - The icon of the crypto currecny fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
+ - The icon of the crypto currency fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
  - A color code (green (increase) / red (decrease)) that indicates that change in price for the last 1 hour
 
 This widget pop-over shows:
  - The status of the secondary coins on click
 
-The widget make use of the [CoinMarketCap](https://coinmarketcap.com/) API `https://api.coinmarketcap.com/v1/ticker/`.
+The widget makes use of the [CoinMarketCap](https://coinmarketcap.com/api/) API `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`, which needs a (free) API key.
 
 ## Configuration
 
-The set of primary and secondary coins is configured via the `coins.js` file where you include the coin code as show below:
+The quote currency and the set of primary and secondary coins are configured via the `coins.js` file where you include the coin code as shown below:
 
 ```js
 module.exports =  {
+    currency: 'USD',
     primary: ["btc", "xrp"],
-    secondary: ["doge", "eth", "dash", "strat", "steem"]
+    secondary: ["doge", "eth", "dash", "steem"]
 };
 ```
 

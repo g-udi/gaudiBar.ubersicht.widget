@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-PERCENTAGE=$(pmset -g batt | grep -Eo '[0-9]+%' | head -n 1 | tr -d '%')
-SOURCE=$(pmset -g batt | sed -n "s/.*'\([^']*\)'.*/\1/p" | head -n 1)
+BATTERY=$(pmset -g batt)
+PERCENTAGE=$(printf '%s\n' "$BATTERY" | grep -Eo '[0-9]+%' | head -n 1 | tr -d '%')
+SOURCE=$(printf '%s\n' "$BATTERY" | sed -n "s/.*'\([^']*\)'.*/\1/p" | head -n 1)
 
 printf '{"percentage":"%s","source":"%s"}\n' "$PERCENTAGE" "$SOURCE"
