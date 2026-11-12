@@ -22,7 +22,7 @@ Only notifications you are participating in are fetched, 50 per page for up to 1
 
 ## Requirements
 
-Set `GAUDI_GITHUB_TOKEN` in the widget `.env` file. See the root `.env.example`. A classic personal access token needs the `notifications` scope. Without a token the widget stays hidden.
+Set `GAUDI_GITHUB_TOKEN` in the widget `.env` file. See the root `.env.example`. A classic personal access token needs the `notifications` scope. Without a token the widget stays hidden. When a request fails (offline, expired token) the widget keeps the last count it showed; requests time out after 15 seconds.
 
 For more information on creating a personal access token, check [this Github article](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 

@@ -72,32 +72,27 @@ export const render = () => {
 
   const endpoint = 'https://api.weatherapi.com/v1/current.json';
   // The key is fed to curl on stdin so it never appears in the process list
-  const command = `${Utils.readSecret('GAUDI_WEATHER_API_KEY', 'lib/plugins/weather/keys.secret.js')}; city="\${GAUDI_WEATHER_CITY:-london}"; if [ -n "$secret" ]; then ${Utils.curlSecretConfig('data-urlencode', 'key=')} | curl -fsSL --get --data-urlencode "q=$city" --config - ${Utils.shellQuote(endpoint)} || true; fi`;
+  const command = `${Utils.readSecret('GAUDI_WEATHER_API_KEY', 'lib/plugins/weather/keys.secret.js')}; city="\${GAUDI_WEATHER_CITY:-london}"; if [ -n "$secret" ]; then ${Utils.curlSecretConfig('data-urlencode', 'key=')} | curl -fsSL ${Utils.CURL_TIMEOUTS} --get --data-urlencode "q=$city" --config - ${Utils.shellQuote(endpoint)} || true; fi`;
 
   return Utils.runWithLocalEnv(command).then((output) => {
     try {
-      
+
       if (!output) return Utils.emptyWidget();
       const weather = Utils.parseJson(output);
 
       if (weather && weather.current) {
-  
+
         return (
           <div className={`gaudi-bar-section-widget ${gaudi_widget_weather}`}>
-            <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/weather/style.css')}></link>
-            {
-              <span>
-                <span className={`gaudi-icon fa fas ${getWeatherIcon(weather.current)}`}></span>
-                <span className='temp'>
-                  <span className='hi'>{Math.round(weather.current.temp_c)}°</span>
-                </span>
-              </span>
-            }
+            <span>
+              <span className={`gaudi-icon fas ${getWeatherIcon(weather.current)}`}></span>
+              <span>{Math.round(weather.current.temp_c)}°</span>
+            </span>
           </div>
         );
       } else return Utils.emptyWidget();
     } catch (error) {
-      console.error("[ERROR] Making Weather API Request", error);
+      console.error("[ERROR] Rendering the WeatherAPI response", error);
       return Utils.emptyWidget();
     }
   }).catch(() => Utils.emptyWidget())

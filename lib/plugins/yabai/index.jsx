@@ -10,6 +10,8 @@ export const refreshOnSignal = true;
 const gaudi_widget_yabai=css`background: #000`
 const gaudi_application_title = css`color: #06F`
 
+const MAX_TITLE_LENGTH = 80;
+
 export const render = () => {
 
     const getAppIcon = (app) => {
@@ -60,61 +62,21 @@ export const render = () => {
 
     }
 
-    const trimWindowName = (path) => {
+    // Caps a window title at MAX_TITLE_LENGTH characters, ending with an ellipsis.
+    const trimWindowName = (title) => {
+        const name = String(title || "").trim();
 
-        let file = "";
-        const wins = String(path || "");
-        let win = "";
-        const winseg = wins.split('/');
-        file = winseg[winseg.length - 1];
-        let j = winseg.length - 1;
-        let flag1 = 0;
-        let flag2 = 0;
-
-        while (file.length >= 65) {
-            file = file.slice(0, -1);
-            flag1 = 1;
-        }
-
-        if (j > 1) {
-            while (j >= 1) {
-                j -= 1;
-                if ((win + file).length >= 65) {
-                    win = ` …/${win}`;
-                    break;
-                } else {
-                    win = winseg[j] + '/' + win;
-                }
-            }
-        }
-
-        while (win.length >= 65) {
-            win = win.slice(1);
-            flag2 = 1;
-        }
-
-        if (flag1 >= 1) {
-            file = file + '…';
-        }
-
-        if (flag2 >= 1) {
-            win = `…${win}`;
-        }
-
-        if (wins === "") {
-            win = "…";
-        }
-
-        return `${win} ${file}`.trim()
-
+        return name.length > MAX_TITLE_LENGTH ? `${name.slice(0, MAX_TITLE_LENGTH - 1).trimEnd()}…` : name;
     }
 
     return Utils.runWithLocalEnv(`bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/yabai/yabai"`).then((output) => {
         const yabai = Utils.parseJson(output);
-        if (!yabai || !yabai.activeWindow || !yabai.layout) return Utils.emptyWidget();
+        if (!yabai || !yabai.layout) return Utils.emptyWidget();
 
-        const app = yabai.activeWindow.app;
-        const title = trimWindowName(yabai.activeWindow.title);
+        // No focused window (an empty space): still show the layout
+        const activeWindow = yabai.activeWindow || {};
+        const app = activeWindow.app;
+        const title = trimWindowName(activeWindow.title);
 
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_yabai}`}>
@@ -128,7 +90,7 @@ export const render = () => {
                                 <span className={`${getAppIcon(app)} ${getAppColor(app)} ${gaudi_application_title} gaudi-icon`}></span>
                                 <span>{app.toUpperCase()}</span>
                                 {
-                                    app.toLowerCase() !== title.toLowerCase() ?
+                                    title && app.toLowerCase() !== title.toLowerCase() ?
                                     (
                                         <span> | {title}</span>
                                     ) : null

@@ -8,7 +8,10 @@ const DND_SCRIPT = `bash "$GAUDI_BAR_WIDGET_DIR/lib/plugins/dnd/dnd"`;
 // Runs the Shortcuts shortcut named in GAUDI_DND_SHORTCUT; a no-op when it is not set.
 const toggle = () => Utils.runWithLocalEnv(`${DND_SCRIPT} toggle`).catch(() => {});
 
-export const render = () => {
+export const render = ({ refresh } = {}) => {
+
+    // Re-read the state straight after a toggle instead of waiting for the next poll
+    const onClick = () => toggle().then(() => refresh && refresh());
 
     return Utils.runWithLocalEnv(`${DND_SCRIPT} status`).then((output) => {
 
@@ -21,7 +24,7 @@ export const render = () => {
             <div>
                 <link rel="stylesheet" type="text/css" href={Utils.widgetPath('lib/plugins/dnd/style.css')}></link>
                 <div className={`gaudi-bar-section-widget gaudi-dnd-${status} ${canToggle ? 'gaudi-clickable' : ''}`}>
-                    <span onClick={canToggle ? toggle : undefined} className={`${icon} gaudi-icon gaudi-icon-single`}></span>
+                    <span onClick={canToggle ? onClick : undefined} title={values.mode || undefined} className={`${icon} gaudi-icon gaudi-icon-single`}></span>
                 </div>
             </div>
         )

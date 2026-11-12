@@ -21,7 +21,7 @@ export const render = () => {
         }
         return (
             <span>
-                <span className={`fas ${icon} gaudi-icon gaudi-color-grey`}></span>
+                <span className={`fas ${icon} gaudi-icon`}></span>
                 <span>{output}</span>
             </span>
         )
@@ -31,7 +31,7 @@ export const render = () => {
 
         const values = Utils.parseJson(output);
         if (!values) return Utils.emptyWidget();
-        
+
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_network}`}>
                 {getNetworkStatus(values)}

@@ -4,7 +4,7 @@ import * as Utils from '../../utils'
 
 export const refreshFrequency = 5000;
 
-const gaudi_widget_stats = css`background-color: none; margin-left: -15px`
+const gaudi_widget_stats = css`background-color: transparent; margin-left: -15px`
 const gaudi_color_green = css`color: #32cd32`
 const gaudi_color_red = css`color: #be222f`
 
@@ -104,13 +104,13 @@ export const render = () => {
     }
 
     /* @function getFreeSpace
-     * @description renders the hard-disk utilization percentage
+     * @description renders the free hard-disk space
      * @parameter <String> space the hard-disk free capacity in GB
      */
     const getFreeSpace = (space) => {
         return (
             <span>
-                <span className='fa fa-hdd gaudi-icon'></span><span className='white'>{space}GB</span>
+                <span className='fa fa-hdd gaudi-icon'></span><span>{space}GB</span>
             </span>
         );
     }
@@ -126,7 +126,7 @@ export const render = () => {
         return (
             <div className={`gaudi-bar-section-widget ${gaudi_widget_stats}`}>
                 <span className="gaudi-bar-section-widget-section">{getCPU(values.cpu)}</span>
-                <span className="gaudi-bar-section-widget-section">{getFreeSpace(String(values.hdd || '').replace('Gi', '').trim())}</span>
+                <span className="gaudi-bar-section-widget-section">{getFreeSpace(String(values.hdd || '').trim())}</span>
                 <span className="gaudi-bar-section-widget-section">{getMem(values.memory)}</span>
                 <span className="gaudi-bar-section-widget-section">{getNetTraffic(traffic.down, traffic.up)}</span>
             </div>

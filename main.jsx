@@ -8,6 +8,7 @@ export const refreshFrequency = 1000;
 const PRIMARY_BARS = ["top", "bottom"];
 const SECONDARY_BARS = ["left", "middle", "right"];
 const DEFAULT_PLUGIN_REFRESH = 10000;
+const STALE_IN_FLIGHT = 60000;
 
 const pluginState = {};
 let lastTick = 0;
@@ -34,10 +35,19 @@ const shouldRefreshPlugin = (pluginName, plugin, now, forced) => {
     const state = pluginState[pluginName] || {};
     const refreshInterval = plugin.refreshFrequency || DEFAULT_PLUGIN_REFRESH;
 
-    if (state.inFlight) return false;
-    if (forced && plugin.refreshOnSignal) return true;
+    if (state.inFlight) {
+        // A run that never settles (a hung command) must not block the plugin for good.
+        const staleAfter = Math.max(STALE_IN_FLIGHT, refreshInterval * 3);
+        if (now - state.lastRun < staleAfter) return false;
+    }
 
-    return !state.lastRun || now - state.lastRun >= refreshInterval;
+    if (forced && plugin.refreshOnSignal) return true;
+    if (!state.lastRun) return true;
+
+    // Clocks refresh when the minute changes rather than on a fixed interval.
+    if (plugin.refreshOnMinute) return Math.floor(now / 60000) !== Math.floor(state.lastRun / 60000);
+
+    return now - state.lastRun >= refreshInterval;
 };
 
 const renderPlugin = (pluginName, plugin, dispatch, now) => {
@@ -47,15 +57,28 @@ const renderPlugin = (pluginName, plugin, dispatch, now) => {
         lastRun: now
     };
 
-    Promise.resolve(plugin.render())
+    // Only the latest run may clear the in-flight flag (an older, stale run can settle late).
+    const settle = () => {
+        if (pluginState[pluginName].lastRun === now) pluginState[pluginName].inFlight = false;
+    };
+
+    // Lets a plugin ask for its own refresh, e.g. after a click changed what it shows.
+    const refresh = () => {
+        if (!pluginState[pluginName].inFlight) renderPlugin(pluginName, plugin, dispatch, Date.now());
+    };
+
+    Promise.resolve()
+        .then(() => plugin.render({ refresh }))
         .then((output) => {
-            pluginState[pluginName].inFlight = false;
+            settle();
+            // `undefined` means "nothing new": keep what is on screen.
             if (output === undefined) return;
             dispatch({ output, type: pluginName });
         })
         .catch((error) => {
-            pluginState[pluginName].inFlight = false;
+            settle();
             console.error(`[gaudi] ${pluginName} failed`, error);
+            dispatch({ error: String((error && error.message) || error), type: pluginName });
         });
 };
 
@@ -82,8 +105,9 @@ export const command = (dispatch) => {
     });
 };
 
-export const render = ({state, warning}) => {
+export const render = ({state, warnings}) => {
     const widgetState = state || {};
+    const warning = Object.values(warnings || {}).join(' · ');
 
     try {
         return <div className="gaudi">
@@ -119,10 +143,21 @@ export const render = ({state, warning}) => {
 export const updateState = (event, previousState) => {
     const currentState = previousState || {};
 
+    // Übersicht reports every run of `command` itself; the plugins dispatch their own
+    // events, so that one only matters when `command` failed as a whole.
+    const source = event.type === 'UB/COMMAND_RAN' ? 'gaudi' : event.type;
+
+    if (!source || (source === 'gaudi' && !event.error)) return currentState;
+
+    const warnings = { ...(currentState.warnings || {}) };
+
+    // A failed plugin keeps its last output and shows a warning until it succeeds again.
     if (event.error) {
-        console.error(event.error);
-        return { ...currentState, warning: `We got an error: ${event.error}` };
+        warnings[source] = `${source}: ${event.error}`;
+        return { ...currentState, warnings };
     }
 
-    return event.type ? { state: { ...(currentState.state || {}), [event.type]: event.output } } : event;
+    delete warnings[source];
+
+    return { state: { ...(currentState.state || {}), [source]: event.output }, warnings };
 };

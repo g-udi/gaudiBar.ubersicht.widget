@@ -1,0 +1,27 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{md,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[lib/plugins/{dnd/dnd,yabai/yabai}]
+indent_size = 2
+
+[lib/plugins/weather/index.jsx]
+indent_size = 2
+
+[{lib/fonts/**,lib/plugins/*/fonts/**,lib/plugins/prayerTime/prayerTime.php}]
+indent_style = unset
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset

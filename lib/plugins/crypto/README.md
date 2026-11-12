@@ -12,16 +12,13 @@ This widget shows:
  - The status of primary coins you track directly on the desktop
  - A pop-over that shows the status of the secondary coins on hover
  - The icon of the crypto currency fetched from [CryptoFont](https://cryptofont.com/) that is loaded in the widget.
- - A color code (green (increase) / red (decrease)) that indicates that change in price for the last 1 hour
-
-This widget pop-over shows:
- - The status of the secondary coins on click
+ - A color code (green (increase) / red (decrease)) that indicates the change in price for the last 1 hour
 
 The widget makes use of the [CoinMarketCap](https://coinmarketcap.com/api/) API `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`, which needs a (free) API key.
 
 ## Configuration
 
-The quote currency and the set of primary and secondary coins are configured via the `coins.js` file where you include the coin code as shown below:
+The quote currency (`USD` when omitted) and the set of primary and secondary coins are configured via the `coins.js` file where you include the coin code as shown below. Prices are prefixed with `$`, `€` or `£`, or with the currency code for any other currency:
 
 ```js
 module.exports =  {

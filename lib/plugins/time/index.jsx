@@ -1,7 +1,10 @@
 
 import { css } from "uebersicht"
 
-export const refreshFrequency = 10000;
+// Refreshed when the minute changes (see `refreshOnMinute` in main.jsx), so the
+// clock never lags; the interval is only the nominal period.
+export const refreshFrequency = 60000;
+export const refreshOnMinute = true;
 
 const gaudi_widget_time = css`background: #19cb00`
 

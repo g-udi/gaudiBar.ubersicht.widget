@@ -49,7 +49,7 @@ export const render = () => {
 
         const values = Utils.parseJson(output);
         if (!values || !values.percentage) return Utils.emptyWidget();
-        
+
         return (<div>{getBatteryStatus(values.percentage, values.source)}</div>)
 
     }).catch(() => Utils.emptyWidget())
