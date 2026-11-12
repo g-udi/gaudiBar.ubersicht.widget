@@ -1,9 +1,9 @@
-# prayertime
+# prayerTime
 
 ![prayer-widget](https://user-images.githubusercontent.com/550726/66969793-fe0a1880-f082-11e9-9e57-03937328c973.png)
 
 > [!IMPORTANT]
-> PHP is needed to run this widget. If you don't have it installed, you can install it by running `brew install php`.
+> PHP is needed to run this widget. If you don't have it installed, you can install it by running `brew install php`. It is looked up in `PATH` and in the Homebrew locations; without it the widget stays hidden.
 
 | Refresh Frequency             | 60000                                                                   |
 |-------------------------------|-------------------------------------------------------------------------|
@@ -18,7 +18,7 @@ This widget pop-over shows:
  - the prayer times for the current day in the identified location
  - the current (last) prayer time highlighted in green
 
-> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user. As a fallback you can adjust the `GEO_LOCATION` object in `index.jsx` (latitude, longitude, city and country; it defaults to London, UK)
+> This widget makes use of the `geolocation.getCurrentPosition` function to get an accurate **current** location of the user, asked for once a day. As a fallback you can adjust the `GEO_LOCATION` object in `index.jsx` (latitude, longitude, city and country; it defaults to London, UK)
 
 ## Configuration
 

@@ -26,7 +26,7 @@ To overcome this, gaudi uses `flex` layout capabilities and a module per widget 
 - [dnd](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/dnd)
 - [github](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/github)
 - [network](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/network)
-- [prayertime](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/prayerTime)
+- [prayerTime](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/prayerTime)
 - [stats](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/stats)
 - [time](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/time)
 - [weather](https://github.com/g-udi/gaudiBar.ubersicht.widget/tree/main/lib/plugins/weather)
@@ -100,7 +100,7 @@ GAUDI_GITHUB_TOKEN=
 GAUDI_DND_SHORTCUT=
 ```
 
-`.env` is sourced by the shell, so quote values that contain spaces or special characters. Legacy ignored `keys.secret.js` files are still read for compatibility, but new installs should use `.env`. Tokens and API keys are handed to `curl` on standard input, so they do not show up in the process list.
+`.env` is sourced by the shell, so quote values that contain spaces or special characters. Legacy ignored `keys.secret.js` files (`lib/plugins/<plugin>/keys.secret.js`, a single line such as `module.exports = { apiKey: 'your-key' };`) are still read for compatibility, but new installs should use `.env`. Tokens and API keys are handed to `curl` on standard input, so they do not show up in the process list.
 
 ## Layout
 
@@ -139,7 +139,9 @@ const PLUGIN_LOADERS = {
 };
 ```
 
-Each plugin can expose its own `refreshFrequency`. The main widget wakes once per second, checks the configured widgets, and only refreshes a plugin when its interval has elapsed. Slow commands cannot overlap with themselves, and optional/unconfigured widgets return no output instead of crashing the whole bar.
+Each plugin can expose its own `refreshFrequency`. The main widget wakes once per second, checks the configured widgets, and only refreshes a plugin when its interval has elapsed; a plugin that exports `refreshOnMinute = true` (the clock) is refreshed when the minute changes instead. Slow commands cannot overlap with themselves, a command that never returns is given up on after a minute (or three intervals, whichever is longer), and network requests time out after 15 seconds. Optional/unconfigured widgets return no output instead of crashing the whole bar.
+
+A plugin that returns `undefined` keeps what it last showed. A plugin that throws also keeps its last output, and a small red notice naming the plugin is shown above the bottom bar until it succeeds again.
 
 A plugin that exports `refreshOnSignal = true` is also refreshed straight away whenever Übersicht is asked to refresh the widget from outside, which is how the [yabai](lib/plugins/yabai) plugin reacts to yabai signals:
 
@@ -153,7 +155,7 @@ The widget id is the path of `main.jsx` inside the widgets folder with `/` and `
 
 Shell-backed widgets run through helper functions in `lib/utils.js`. These helpers find the widget folder, export it as `GAUDI_BAR_WIDGET_DIR`, load `.env`, quote shell arguments safely, and read credentials (`readSecret`) without exposing them on a command line.
 
-External commands are macOS-oriented. `php` is discovered from `PATH`, and `yabai` from `PATH` or the usual Homebrew locations; if they are unavailable, the related widgets stay hidden or return an empty state.
+External commands are macOS-oriented. `php` and `yabai` are discovered from `PATH` or the usual Homebrew locations (`/opt/homebrew/bin`, `/usr/local/bin`), so Übersicht does not need to run commands in a login shell; if they are unavailable, the related widgets stay hidden or return an empty state.
 
 ## Development
 
@@ -163,7 +165,7 @@ Run the smoke test before committing changes:
 ./test/smoke.sh
 ```
 
-The smoke test checks shell syntax, ShellCheck when available, committed secret/runtime artifacts, static secret imports, stale runtime paths, that the dnd plugin stays read-only, and that no secret is passed to `curl` as an argument.
+The smoke test checks shell syntax, ShellCheck when available, PHP and JavaScript syntax (JSX too when Übersicht is installed, using the parser it ships), committed secret/runtime artifacts, static secret imports, stale runtime paths, that the dnd plugin stays read-only, and that no secret is passed to `curl` as an argument. It never reads local secret files. The same script runs on GitHub Actions for every push to `main` and every pull request.
 
 ## Credits & Inspirations
 

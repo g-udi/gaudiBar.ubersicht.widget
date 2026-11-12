@@ -19,6 +19,8 @@ The state is read from `~/Library/DoNotDisturb/DB/Assertions.json`, the file whe
 | bell | purple | no Focus is on |
 | bell | grey | the state cannot be read |
 
+Hovering the icon shows the name of the active Focus mode as a tooltip.
+
 Limitations:
 
 - macOS protects that file. Übersicht needs **Full Disk Access** (System Settings → Privacy & Security → Full Disk Access) to read it; without it the widget stays grey.
@@ -36,4 +38,4 @@ There is no public command to switch a Focus, so the widget delegates to [Shortc
     GAUDI_DND_SHORTCUT="Toggle Do Not Disturb"
     ```
 
-A click then runs `shortcuts run "<name>"`. When `GAUDI_DND_SHORTCUT` is empty the widget is not clickable and a click does nothing.
+A click then runs `shortcuts run "<name>"` and re-reads the state straight away. When `GAUDI_DND_SHORTCUT` is empty the widget is not clickable and a click does nothing.

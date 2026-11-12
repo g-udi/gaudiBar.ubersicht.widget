@@ -18,7 +18,7 @@ Set these variables in the widget `.env` file. See the root `.env.example`.
 
 | Variable | Description |
 |----------|-------------|
-| `GAUDI_WEATHER_API_KEY` | Your WeatherAPI key. Without it the widget stays hidden. |
+| `GAUDI_WEATHER_API_KEY` | Your WeatherAPI key. Without it, or when a request fails, the widget stays hidden. |
 | `GAUDI_WEATHER_CITY` | Anything WeatherAPI accepts as a location: a city name, a postcode or `lat,lon`. Defaults to `london`. |
 
 ## Customization

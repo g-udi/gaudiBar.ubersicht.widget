@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-json_error() {
-  printf '{"activeWindow":null,"layout":null,"error":"%s"}\n' "$1"
+# Nothing to show: the widget hides itself when there is no layout.
+no_yabai() {
+  printf '{"activeWindow":null,"layout":null}\n'
 }
 
 if command -v yabai >/dev/null 2>&1; then
@@ -11,13 +12,14 @@ elif [[ -x /opt/homebrew/bin/yabai ]]; then
 elif [[ -x /usr/local/bin/yabai ]]; then
   yabai_path="/usr/local/bin/yabai"
 else
-  json_error "yabai_not_installed"
+  # yabai is not installed.
+  no_yabai
   exit 0
 fi
 
 # A failed query also covers "yabai is not running", so no separate process check.
 if ! layout=$("$yabai_path" -m query --spaces --space 2>/dev/null) || [[ -z "$layout" ]]; then
-  json_error "yabai_not_running"
+  no_yabai
   exit 0
 fi
 

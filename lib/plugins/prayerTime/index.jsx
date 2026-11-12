@@ -22,7 +22,7 @@ const getPrayerTimes = (parameters) => {
 
     if (cachedTimes.key === key && cachedTimes.output) return Promise.resolve(cachedTimes.output);
 
-    const command = `if command -v php >/dev/null 2>&1; then php -f "$GAUDI_BAR_WIDGET_DIR/lib/plugins/prayerTime/prayerTime.php" ${parameters}; fi`;
+    const command = `${Utils.findCommand('php', 'php_bin')}; if [ -n "$php_bin" ]; then "$php_bin" -f "$GAUDI_BAR_WIDGET_DIR/lib/plugins/prayerTime/prayerTime.php" ${parameters}; fi`;
 
     return Utils.runWithLocalEnv(command).then((output) => {
         if (output) cachedTimes = { key, output };
@@ -36,44 +36,61 @@ const getPrayerTimes = (parameters) => {
     1. calcMethod : Calculation method
         => Possible values:
             0: Ithna Ashari
-        1: University of Islamic Sciences, Karachi
-        2: Islamic Society of North America (ISNA)
-        3: Muslim World League (MWL)
-        4: Umm al-Qura, Makkah
-        5: Egyptian General Authority of Survey
-        6: Custom Setting
-        7: Institute of Geophysics, University of Tehran
+            1: University of Islamic Sciences, Karachi
+            2: Islamic Society of North America (ISNA)
+            3: Muslim World League (MWL)
+            4: Umm al-Qura, Makkah
+            5: Egyptian General Authority of Survey
+            6: Custom Setting
+            7: Institute of Geophysics, University of Tehran
 
     2. asrMethod : Juristic Methods / Asr Calculation Methods
         => Possible values:
             0: Shafii (standard)
-        1: Hanafi
-        3. latitude  : Latitude
-        4. longitude : Longitude
-        5. timezone  : Timezone
+            1: Hanafi
+
+    3. latitude  : Latitude
+    4. longitude : Longitude
+    5. timezone  : Timezone
+
     Note: latitude/longitude come from Übersicht's geolocation, with GEO_LOCATION above as the fallback.
 */
+
+// Day on which the location was last resolved; it is asked for once a day, and
+// again on every refresh until the first answer arrives.
+let locatedOn = null;
+
+const updateLocation = () => {
+    const today = new Date().toDateString();
+
+    if (locatedOn === today) return;
+    if (typeof geolocation === 'undefined' || !geolocation.getCurrentPosition) return;
+
+    geolocation.getCurrentPosition((location) => {
+        if (!location || !location.position || !location.position.coords) return;
+
+        locatedOn = today;
+        GEO_LOCATION = {
+            latitude: location.position.coords.latitude,
+            longitude: location.position.coords.longitude,
+            city: (location.address && location.address.city) || GEO_LOCATION.city,
+            country: (location.address && location.address.country) || GEO_LOCATION.country
+        }
+    });
+}
+
 export const render = () => {
-    
+
+    updateLocation();
+
     const CONFIGURATIONS = {
         calcMethod: '2',
         asrMethod: '1',
         timezone: String(-new Date().getTimezoneOffset() / 60),
         location: `${GEO_LOCATION.city}, ${GEO_LOCATION.country}`,
-        // As Mugrib and Sunset times are same, It is preffered to hide Sunset column
+        // As Maghrib and Sunset times are the same, it is preferred to hide the Sunset column
         hideSunset: true,
         hideSunrise: true
-    }
-
-    if (typeof geolocation !== 'undefined' && geolocation.getCurrentPosition) {
-        geolocation.getCurrentPosition((location)=> {
-            GEO_LOCATION = {
-              latitude: location.position.coords.latitude,
-              longitude: location.position.coords.longitude,
-              city: (location.address && location.address.city) || GEO_LOCATION.city,
-              country: (location.address && location.address.country) || GEO_LOCATION.country
-            }
-        });
     }
 
     const parameters = `calc_method=${CONFIGURATIONS.calcMethod} asr_method=${CONFIGURATIONS.asrMethod} lat=${GEO_LOCATION.latitude} lon=${GEO_LOCATION.longitude} tz=${CONFIGURATIONS.timezone}`;

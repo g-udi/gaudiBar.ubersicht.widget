@@ -19,7 +19,6 @@ while IFS= read -r line; do
     fi
 done <<< "$SERVICES"
 
-WIFI_STATUS=""
 WIFI_SSID=""
 SSID_REDACTED="false"
 IP_ADDRESS=""
@@ -35,7 +34,6 @@ clean_ssid() {
 
 if [[ -n "$CURRENT_DEVICE" ]]; then
     DEVICE_INFO=$(ifconfig -v "$CURRENT_DEVICE" 2>/dev/null)
-    WIFI_STATUS=$(printf '%s\n' "$DEVICE_INFO" | awk -F': ' '/status:/ {print $2; exit}')
     IP_ADDRESS=$(printf '%s\n' "$DEVICE_INFO" | awk '/inet / && $2 != "127.0.0.1" {print $2; exit}')
     DEVICE_TYPE=$(printf '%s\n' "$DEVICE_INFO" | awk -F': ' '/^[[:space:]]*type:/ {print $2; exit}')
 
@@ -67,10 +65,8 @@ if [[ "$TYPE" == "wifi" ]]; then
     fi
 fi
 
-printf '{"service":"%s","type":"%s","status":"%s","ssid":"%s","ssidRedacted":%s,"ip":"%s"}\n' \
-    "$(json_escape "$CURRENT_SERVICE")" \
+printf '{"type":"%s","ssid":"%s","ssidRedacted":%s,"ip":"%s"}\n' \
     "$TYPE" \
-    "$(json_escape "$WIFI_STATUS")" \
     "$(json_escape "$WIFI_SSID")" \
     "$SSID_REDACTED" \
     "$(json_escape "$IP_ADDRESS")"

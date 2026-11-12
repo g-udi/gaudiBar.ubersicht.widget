@@ -9,7 +9,7 @@ This widget displays the layout of the current space and the focused application
 
 ## Features:
 - Displays the layout of the current space (`bsp`, `stack`, `float`)
-- Displays the currently focused application and its window title
+- Displays the currently focused application and its window title (capped at 80 characters); on an empty space only the layout is shown
 - Uses Font Awesome icons for application icons (`APPLICATIONS_ICONS` and `APPLICATIONS_COLORS` in `index.jsx`)
 
 ## Refreshing from yabai signals
